@@ -329,6 +329,33 @@ button.danger:hover:not(:disabled) {
   gap: 8px;
 }
 
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.pagination p {
+  margin: 0;
+  color: #52606d;
+  font-weight: 700;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination-controls span {
+  min-width: 96px;
+  color: #334155;
+  font-weight: 700;
+  text-align: center;
+}
+
 .pill {
   display: inline-flex;
   margin-left: 10px;
@@ -400,5 +427,14 @@ button.danger:hover:not(:disabled) {
 
   .table-row {
     grid-template-columns: 1fr;
+  }
+
+  .pagination {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .pagination-controls {
+    justify-content: space-between;
   }
 }

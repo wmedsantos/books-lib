@@ -95,6 +95,8 @@ const emptyBookForm: BookForm = {
   publishOnSite: false,
 }
 
+const bookPageSize = 10
+
 function App() {
   const queryClient = useQueryClient()
   const [session, setSession] = useState<Session | null>(() => readSession())
@@ -106,6 +108,7 @@ function App() {
   const [bookSearch, setBookSearch] = useState('')
   const [bookAuthorFilter, setBookAuthorFilter] = useState('')
   const [bookGenreFilter, setBookGenreFilter] = useState('')
+  const [bookPage, setBookPage] = useState(1)
   const [referenceSearch, setReferenceSearch] = useState('')
   const [bookForm, setBookForm] = useState<BookForm>(emptyBookForm)
   const [editingBookId, setEditingBookId] = useState<string | null>(null)
@@ -122,6 +125,10 @@ function App() {
       localStorage.removeItem('books-lib-session')
     }
   }, [session])
+
+  useEffect(() => {
+    setBookPage(1)
+  }, [bookSearch, bookAuthorFilter, bookGenreFilter])
 
   const healthQuery = useQuery({
     queryKey: ['health'],
@@ -149,14 +156,15 @@ function App() {
   })
 
   const booksQuery = useQuery({
-    queryKey: ['books', bookSearch, bookAuthorFilter, bookGenreFilter],
+    queryKey: ['books', bookSearch, bookAuthorFilter, bookGenreFilter, bookPage],
     queryFn: async () => {
       const response = await api.get<BookListResponse>('/api/v1/books', {
         params: {
           search: bookSearch || undefined,
           authorId: bookAuthorFilter || undefined,
           genreId: bookGenreFilter || undefined,
-          pageSize: 50,
+          page: bookPage,
+          pageSize: bookPageSize,
         },
       })
       return response.data
@@ -170,6 +178,7 @@ function App() {
     },
     onSuccess: () => {
       setBookForm(emptyBookForm)
+      setBookPage(1)
       queryClient.invalidateQueries({ queryKey: ['books'] })
     },
   })
@@ -275,6 +284,10 @@ function App() {
     ? updateReference.isError ? updateReference.error : null
     : createReference.isError ? createReference.error : null
   const referenceErrors = getValidationErrors(referenceMutationError)
+  const bookTotal = booksQuery.data?.total ?? 0
+  const bookTotalPages = Math.max(1, Math.ceil(bookTotal / bookPageSize))
+  const bookPageStart = bookTotal === 0 ? 0 : (bookPage - 1) * bookPageSize + 1
+  const bookPageEnd = Math.min(bookPage * bookPageSize, bookTotal)
 
   function submitBook(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -677,6 +690,35 @@ function App() {
                 </div>
               ))}
             </div>
+
+            {bookTotal > 0 && (
+              <nav className="pagination" aria-label="Book list pagination">
+                <p>
+                  Showing {bookPageStart}-{bookPageEnd} of {bookTotal}
+                </p>
+                <div className="pagination-controls">
+                  <button
+                    type="button"
+                    className="secondary"
+                    disabled={bookPage <= 1 || booksQuery.isFetching}
+                    onClick={() => setBookPage((current) => Math.max(1, current - 1))}
+                  >
+                    Previous
+                  </button>
+                  <span>
+                    Page {bookPage} of {bookTotalPages}
+                  </span>
+                  <button
+                    type="button"
+                    className="secondary"
+                    disabled={bookPage >= bookTotalPages || booksQuery.isFetching}
+                    onClick={() => setBookPage((current) => Math.min(bookTotalPages, current + 1))}
+                  >
+                    Next
+                  </button>
+                </div>
+              </nav>
+            )}
           </section>
         </section>
       ) : (
