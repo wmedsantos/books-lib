@@ -39,15 +39,24 @@ challenge contract.
 - [x] Complexity trade-offs and rejected options documented.
 - [x] Delivery backlog ordered.
 - [x] README entry point created.
-- [ ] Original challenge statement received.
-- [ ] Stakeholder decisions recorded in Product Definition.
-- [ ] Proposed ADRs accepted.
+- [x] Challenge statement received and requirements extracted.
+- [x] Three representative UBEMTEM JSON records received and profiled.
+- [ ] Full UBEMTEM export or aggregate profile received.
+- [x] Stakeholder decisions recorded for access, relationships, deletion,
+  auditing, and bootstrap identity.
+- [x] Delivery requirements captured in a traceability matrix.
+- [x] Provisional source-to-domain mapping documented.
+- [x] Missing-Genre policy confirmed as the controlled `Unclassified` fallback.
+- [ ] Dataset-wide distributions confirmed.
+- [x] ADR 0004 accepted for source import mapping.
 - [ ] Day 1 checklist created immediately before the walking skeleton.
 
 ## Review notes
 
-The required stack is compatible with the proposed design, but technology alone
-does not define behavior. Starting implementation now would risk encoding wrong
-cardinalities, deletion semantics, fields, and authorization rules. The gate is
-therefore a quality control, not analysis paralysis: once the seven product
-questions are answered, Phase 1 can begin with bounded scope.
+The supplied challenge confirms the delivery shape and three-day timebox. The
+sample confirms the core bibliographic fields but reveals two important facts:
+`creators` may contain multiple credits while the challenge requires one Author,
+and no reliable Genre value is present. ADR 0004 resolves the former without
+violating the challenge and resolves the latter with the explicit `Unclassified`
+fallback. Full profiling is required before production import execution, not
+before the Day 1 walking skeleton.

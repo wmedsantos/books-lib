@@ -14,13 +14,21 @@ UBEMTEM.
 
 1. [Product Definition](docs/product-definition.md) — users, domain, scope,
    assumptions, acceptance criteria, and open questions.
-2. [Architecture](docs/architecture.md) — proposed system shape and trade-offs.
-3. [ADR 0001](docs/adr/0001-modular-monolith-and-vertical-slices.md) — backend
+2. [Requirements traceability](docs/requirements-traceability.md) — challenge
+   obligations, planned evidence, and current delivery status.
+3. [Architecture](docs/architecture.md) — proposed system shape and trade-offs.
+4. [ADR 0001](docs/adr/0001-modular-monolith-and-vertical-slices.md) — backend
    architecture decision.
-4. [ADR 0002](docs/adr/0002-rest-api-and-client-state.md) — API and frontend
+5. [ADR 0002](docs/adr/0002-rest-api-and-client-state.md) — API and frontend
    boundary decision.
-5. [Delivery backlog](docs/backlog.md) — ordered, testable increments.
-6. [Day 0 checklist](docs/daily/day-00-discovery.md) — current progress and exit
+6. [ADR 0003](docs/adr/0003-publication-soft-delete-audit-and-bootstrap.md)
+   — public catalog, deletion/audit, cardinality, and identity bootstrap.
+7. [ADR 0004](docs/adr/0004-libib-import-and-author-mapping.md) — source-data
+   mapping and single-author compatibility.
+8. [Sample data analysis](docs/catalog-data-analysis.md) — provisional field
+   profile and remaining full-export checks.
+9. [Delivery backlog](docs/backlog.md) — ordered, testable increments.
+10. [Day 0 checklist](docs/daily/day-00-discovery.md) — current progress and exit
    criteria.
 
 ## Planned stack

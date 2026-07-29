@@ -9,10 +9,16 @@ logging review, and updated daily checklist.
 - [x] Define the problem, personas, vocabulary, assumed scope, and exclusions.
 - [x] Propose architecture and record initial ADRs.
 - [x] Identify missing requirements that block implementation.
-- [ ] Obtain and record the original challenge contract.
-- [ ] Confirm fields, relationships, authorization, deletion, and public access.
+- [x] Extract the supplied challenge statement into traceable requirements.
+- [x] Analyze the three-record UBEMTEM sample and document provisional mapping.
+- [ ] Analyze the full UBEMTEM export or an aggregate profile.
+- [x] Confirm relationships, authorization, deletion, and public access.
+- [x] Confirm delivery requirements from the challenge statement.
+- [x] Confirm provisional Book fields from the sample.
+- [x] Confirm `Unclassified` as the missing-Genre import fallback.
+- [ ] Confirm dataset-wide field quality before executing an import.
 
-## Phase 1 — Walking skeleton
+## Day 1 — Walking skeleton and reference-data path
 
 - [ ] Scaffold `/apps/api` and `/apps/web` with pinned supported dependencies.
 - [ ] Add formatting, analyzers, type-checking, and test commands.
@@ -21,53 +27,43 @@ logging review, and updated daily checklist.
   ready health endpoints.
 - [ ] Render a web shell that calls API health through the configured Axios
   client and TanStack Query.
+- [ ] Complete the Genre API and UI walking feature with its main tests.
 
 **Acceptance:** one documented command starts the system; health is visible end
-to end; quality commands run locally; no catalog feature exists yet.
+to end; quality commands run locally; Genre management works through the SPA,
+API, and PostgreSQL with main-scenario tests.
 
-## Phase 2 — Identity slice
+## Day 2 — Authors, books, and core relationships
+
+- [ ] Complete Author management through API and SPA.
+- [ ] Complete Book management with required Author and Genre relationships.
+- [ ] Add search, pagination, and relevant filters.
+- [ ] Add API tests for main success and failure paths.
+
+**Acceptance:** every mandatory domain operation works end to end and book lists
+display their author and genre.
+
+## Day 3 — Identity, public catalog, and delivery hardening
 
 - [ ] Define authentication threat model and token lifetime/storage decision.
 - [ ] Add user schema and safe bootstrap workflow.
 - [ ] Implement login validation and JWT issuance.
+- [ ] Implement mandatory first-login password change; deny catalog operations
+  while the credential is expired.
 - [ ] Protect write endpoints and implement frontend session handling.
 - [ ] Test valid, invalid, expired, and unauthorized scenarios without logging
   sensitive values.
 
-**Acceptance:** a seeded manager can sign in and protected API behavior is
-consistent; credentials and tokens never enter source control or logs.
-
-## Phase 3 — Genres walking feature
-
-- [ ] Update product definition, ADR impact, and day checklist.
-- [ ] Implement genre schema, migration, vertical slices, and integration tests.
-- [ ] Implement list and form screens with all UI states.
-
-**Acceptance:** the smallest reference-data feature works through UI, API, and
-PostgreSQL, establishing conventions for subsequent slices.
-
-## Phase 4 — Authors
-
-- [ ] Confirm author fields and name rules.
-- [ ] Implement author slices and constraints with API tests.
-- [ ] Implement accessible author screens and mutation feedback.
-
-**Acceptance:** managers can maintain authors and conflicts use the documented
-HTTP contract.
-
-## Phase 5 — Books and relationships
-
-- [ ] Confirm book fields and cardinalities.
-- [ ] Implement transactional book slices and relational constraints.
-- [ ] Add paginated search/filter projection without N+1 queries.
-- [ ] Implement book screens with author and genre selection.
-- [ ] Cover validation, missing links, duplicates, concurrency, and conflicts.
-
-**Acceptance:** the core catalog journey meets every confirmed challenge
-scenario and remains consistent under invalid writes.
-
-## Phase 6 — Delivery hardening
-
+- [ ] Implement an anonymous public projection restricted to active books with
+  `publishOnSite = true` and active related records.
+- [ ] Soft-delete in the same transaction as an append-only audit entry.
+- [ ] Implement a rerunnable JSON-to-PostgreSQL import script with dry-run mode,
+  per-row validation, `Unclassified` Genre fallback, duplicate strategy,
+  transactional batches, and an outcome/error report.
+- [ ] Document import prerequisites, command, rollback, and source-file handling;
+  never embed the catalog export in the application image.
+- [ ] Add automated tests for normalization, author resolution, fallback Genre,
+  duplicates, invalid rows, and safe `publishOnSite = false` defaults.
 - [ ] Add CI for API tests/build and web lint/typecheck/test/build.
 - [ ] Document environment variables, migrations, backup, deployment, and
   rollback.
@@ -76,4 +72,5 @@ scenario and remains consistent under invalid writes.
 - [ ] Prepare seeded demo and English interview architecture narrative.
 
 **Acceptance:** reproducible deployment, verified smoke test, documented
-rollback, and no unresolved critical findings.
+rollback, no unresolved critical findings, and every row in the requirement
+traceability matrix has evidence or an explicit known limitation.

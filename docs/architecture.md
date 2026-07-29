@@ -7,7 +7,10 @@
 
 The team is currently one developer, the domain is small, and operational cost
 matters. The architecture therefore optimizes for a short feedback loop and
-clear feature ownership, not hypothetical scale.
+clear feature ownership, not hypothetical scale. The challenge has a three-day
+timebox and explicitly values a functional, coherent solution over exhaustive
+scope, so every structural choice must pay for itself during implementation or
+make the result materially easier to evaluate.
 
 ## System context
 
@@ -58,10 +61,12 @@ wire contract but are not treated as domain entities.
 
 ## Data design
 
-The proposed relational model uses `books`, `authors`, `genres`, `book_authors`,
-`book_genres`, and `users`. Join tables have composite unique keys and foreign
-keys. Normalized columns used for uniqueness are an implementation option to be
-confirmed when exact case/diacritic rules are known.
+The relational model uses `books`, `authors`, `genres`, `users`, and
+`audit_entries`. A book has required `author_id` and `genre_id` foreign keys;
+join tables would misrepresent the confirmed many-to-one rules. Catalog tables
+carry deletion metadata and books carry `publish_on_site`. Normalized columns
+used for uniqueness remain an implementation option until exact case/diacritic
+rules are known.
 
 EF Core migrations are versioned with the API. Write use cases save once per
 transaction. Read use cases project directly into response DTOs and use
@@ -83,9 +88,24 @@ transaction. Read use cases project directly into response DTOs and use
 ## Security and operations
 
 Passwords are hashed with ASP.NET Core's maintained password hasher rather than
-custom cryptography. JWT bearer authentication is appropriate for a separately
-hosted SPA/API, but token storage and refresh strategy remain an explicit threat
-model decision before implementation. Secrets are environment variables.
+custom cryptography. A parameterized operational SQL script bootstraps the first
+manager from an externally generated compatible hash and marks the credential
+expired. The supplied plaintext temporary password must be delivered through a
+secret channel, never committed or logged. JWT bearer authentication is
+appropriate for a separately hosted SPA/API, but token storage and refresh
+strategy remain an explicit threat-model decision before implementation.
+Secrets are environment variables.
+
+Anonymous access is isolated in a public-catalog slice whose query always
+applies active-record and `publish_on_site` predicates. It returns a dedicated
+public DTO rather than the administrative representation. This prevents a
+future admin-only field from becoming public by accident.
+
+Soft deletion is applied explicitly in delete use cases and enforced in query
+projections. The same database transaction inserts an append-only audit entry,
+so a successful deletion cannot exist without its operation log. This small,
+purpose-specific audit trail is preferred over a generic event-sourcing or
+full-history subsystem.
 
 Serilog emits structured JSON in production. Request logs carry trace IDs and
 avoid request bodies. `/health/live` checks the process; `/health/ready` checks
