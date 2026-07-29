@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import './App.css'
@@ -71,6 +71,12 @@ type BookForm = {
 
 type ValidationErrors = Record<string, string[]>
 
+type Session = {
+  accessToken: string
+  email: string
+  passwordChangeRequired: boolean
+}
+
 const emptyBookForm: BookForm = {
   title: '',
   authorId: '',
@@ -91,6 +97,11 @@ const emptyBookForm: BookForm = {
 
 function App() {
   const queryClient = useQueryClient()
+  const [session, setSession] = useState<Session | null>(() => readSession())
+  const [loginEmail, setLoginEmail] = useState('admin@bookslib.local')
+  const [loginPassword, setLoginPassword] = useState('')
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
   const [tab, setTab] = useState<Tab>('books')
   const [bookSearch, setBookSearch] = useState('')
   const [bookAuthorFilter, setBookAuthorFilter] = useState('')
@@ -101,6 +112,16 @@ function App() {
   const [referenceName, setReferenceName] = useState('')
   const [editingReference, setEditingReference] = useState<ReferenceRecord | null>(null)
   const [editingReferenceName, setEditingReferenceName] = useState('')
+
+  useEffect(() => {
+    if (session) {
+      api.defaults.headers.common.Authorization = `Bearer ${session.accessToken}`
+      localStorage.setItem('books-lib-session', JSON.stringify(session))
+    } else {
+      delete api.defaults.headers.common.Authorization
+      localStorage.removeItem('books-lib-session')
+    }
+  }, [session])
 
   const healthQuery = useQuery({
     queryKey: ['health'],
@@ -208,6 +229,35 @@ function App() {
     },
   })
 
+  const login = useMutation({
+    mutationFn: async () => {
+      const response = await api.post<Session>('/api/v1/identity/login', {
+        email: loginEmail,
+        password: loginPassword,
+      })
+      return response.data
+    },
+    onSuccess: (data) => {
+      setSession(data)
+      setLoginPassword('')
+    },
+  })
+
+  const changePassword = useMutation({
+    mutationFn: async () => {
+      const response = await api.post<Session>('/api/v1/identity/change-password', {
+        currentPassword,
+        newPassword,
+      })
+      return response.data
+    },
+    onSuccess: (data) => {
+      setSession(data)
+      setCurrentPassword('')
+      setNewPassword('')
+    },
+  })
+
   const healthLabel = useMemo(() => {
     if (healthQuery.isPending) return 'checking'
     if (healthQuery.isError) return 'offline'
@@ -219,6 +269,8 @@ function App() {
   const referenceType = tab === 'authors' ? 'authors' : 'genres'
   const bookMutationError = createBook.isError ? createBook.error : updateBook.isError ? updateBook.error : null
   const bookErrors = getValidationErrors(bookMutationError)
+  const loginErrors = getValidationErrors(login.error)
+  const changePasswordErrors = getValidationErrors(changePassword.error)
   const referenceMutationError = editingReference
     ? updateReference.isError ? updateReference.error : null
     : createReference.isError ? createReference.error : null
@@ -277,6 +329,95 @@ function App() {
     setEditingReferenceName(record.name)
   }
 
+  if (!session) {
+    return (
+      <AuthShell healthLabel={healthLabel}>
+        <form
+          className="auth-card form-stack"
+          onSubmit={(event) => {
+            event.preventDefault()
+            login.mutate()
+          }}
+        >
+          <h1>Catalog Sign In</h1>
+          <label htmlFor="login-email">Email</label>
+          <input
+            id="login-email"
+            className={fieldClass(loginErrors, 'email')}
+            aria-invalid={hasFieldError(loginErrors, 'email')}
+            value={loginEmail}
+            onChange={(event) => setLoginEmail(event.target.value)}
+          />
+          <FieldMessages errors={loginErrors} field="email" />
+
+          <label htmlFor="login-password">Password</label>
+          <input
+            id="login-password"
+            className={fieldClass(loginErrors, 'password')}
+            aria-invalid={hasFieldError(loginErrors, 'password')}
+            type="password"
+            value={loginPassword}
+            onChange={(event) => setLoginPassword(event.target.value)}
+          />
+          <FieldMessages errors={loginErrors} field="password" />
+
+          {login.isError && <ProblemMessage error={login.error} />}
+          <button type="submit" disabled={login.isPending}>
+            Sign In
+          </button>
+        </form>
+      </AuthShell>
+    )
+  }
+
+  if (session.passwordChangeRequired) {
+    return (
+      <AuthShell healthLabel={healthLabel}>
+        <form
+          className="auth-card form-stack"
+          onSubmit={(event) => {
+            event.preventDefault()
+            changePassword.mutate()
+          }}
+        >
+          <h1>Change Password</h1>
+          <p className="muted">{session.email}</p>
+          <label htmlFor="current-password">Current Password</label>
+          <input
+            id="current-password"
+            className={fieldClass(changePasswordErrors, 'currentPassword')}
+            aria-invalid={hasFieldError(changePasswordErrors, 'currentPassword')}
+            type="password"
+            value={currentPassword}
+            onChange={(event) => setCurrentPassword(event.target.value)}
+          />
+          <FieldMessages errors={changePasswordErrors} field="currentPassword" />
+
+          <label htmlFor="new-password">New Password</label>
+          <input
+            id="new-password"
+            className={fieldClass(changePasswordErrors, 'newPassword')}
+            aria-invalid={hasFieldError(changePasswordErrors, 'newPassword')}
+            type="password"
+            value={newPassword}
+            onChange={(event) => setNewPassword(event.target.value)}
+          />
+          <FieldMessages errors={changePasswordErrors} field="newPassword" />
+
+          {changePassword.isError && <ProblemMessage error={changePassword.error} />}
+          <div className="actions">
+            <button type="submit" disabled={changePassword.isPending}>
+              Save Password
+            </button>
+            <button type="button" className="secondary" onClick={() => setSession(null)}>
+              Sign Out
+            </button>
+          </div>
+        </form>
+      </AuthShell>
+    )
+  }
+
   return (
     <main className="app-shell">
       <header className="topbar">
@@ -288,6 +429,9 @@ function App() {
           <span aria-hidden="true" />
           API {healthLabel}
         </div>
+        <button type="button" className="secondary" onClick={() => setSession(null)}>
+          Sign Out
+        </button>
       </header>
 
       <nav className="tabs" aria-label="Catalog sections">
@@ -676,6 +820,46 @@ function ProblemMessage({ error }: { error: unknown }) {
   )
 }
 
+function AuthShell({ children, healthLabel }: { children: React.ReactNode; healthLabel: string }) {
+  return (
+    <main className="app-shell auth-shell">
+      <header className="topbar">
+        <div>
+          <p className="eyebrow">Books Library</p>
+          <h1>Catalog Administration</h1>
+        </div>
+        <div className={`health health-${healthLabel}`}>
+          <span aria-hidden="true" />
+          API {healthLabel}
+        </div>
+      </header>
+      {children}
+    </main>
+  )
+}
+
+function readSession(): Session | null {
+  try {
+    const value = localStorage.getItem('books-lib-session')
+    if (!value) {
+      return null
+    }
+
+    const parsed = JSON.parse(value) as Partial<Session>
+    if (!parsed.accessToken || !parsed.email || typeof parsed.passwordChangeRequired !== 'boolean') {
+      return null
+    }
+
+    return {
+      accessToken: parsed.accessToken,
+      email: parsed.email,
+      passwordChangeRequired: parsed.passwordChangeRequired,
+    }
+  } catch {
+    return null
+  }
+}
+
 function FieldMessages({ errors, field }: { errors: ValidationErrors; field: string }) {
   const messages = errors[field] ?? []
   if (messages.length === 0) {
@@ -736,12 +920,16 @@ function fieldLabel(field: string) {
     copyCount: 'Copies',
     coverUrl: 'Cover URL',
     creatorCredit: 'Creator Credit',
+    currentPassword: 'Current Password',
     description: 'Description',
+    email: 'Email',
     genreId: 'Genre',
     isbn10: 'ISBN-10',
     isbn13: 'ISBN-13',
     name: 'Name',
+    newPassword: 'New Password',
     pageCount: 'Page Count',
+    password: 'Password',
     publisher: 'Publisher',
     title: 'Title',
   }

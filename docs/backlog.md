@@ -45,18 +45,20 @@ display their author and genre.
 
 ## Day 3 — Identity, public catalog, and delivery hardening
 
-- [ ] Define authentication threat model and token lifetime/storage decision.
-- [ ] Add user schema and safe bootstrap workflow.
-- [ ] Implement login validation and JWT issuance.
-- [ ] Implement mandatory first-login password change; deny catalog operations
+- [x] Define authentication threat model and token lifetime/storage decision.
+- [x] Add user schema and safe bootstrap workflow.
+- [x] Implement login validation and JWT issuance.
+- [x] Implement mandatory first-login password change; deny catalog operations
   while the credential is expired.
-- [ ] Protect write endpoints and implement frontend session handling.
-- [ ] Test valid, invalid, expired, and unauthorized scenarios without logging
-  sensitive values.
+- [x] Protect write endpoints and implement frontend session handling.
+- [x] Smoke-test valid login, mandatory password change, unauthorized writes,
+  forbidden expired-credential writes, and authorized writes.
+- [ ] Add automated authentication integration tests for invalid credentials,
+  JWT expiration, authorization failures, and log sanitization.
 
-- [ ] Implement an anonymous public projection restricted to active books with
+- [x] Implement an anonymous public projection restricted to active books with
   `publishOnSite = true` and active related records.
-- [ ] Soft-delete in the same transaction as an append-only audit entry.
+- [x] Soft-delete in the same transaction as an append-only audit entry.
 - [ ] Implement a rerunnable JSON-to-PostgreSQL import script with dry-run mode,
   per-row validation, `Unclassified` Genre fallback, `Not Identified` Author
   fallback, duplicate strategy, transactional batches, and an outcome/error
@@ -66,10 +68,10 @@ display their author and genre.
 - [ ] Add automated tests for normalization, author resolution, fallback Author,
   fallback Genre, duplicates, invalid rows, and safe `publishOnSite = false`
   defaults.
-- [ ] Add CI for API tests/build and web lint/typecheck/test/build.
-- [ ] Document environment variables, migrations, backup, deployment, and
+- [x] Add CI for API tests/build and web lint/typecheck/test/build.
+- [x] Document environment variables, migrations, backup, deployment, and
   rollback.
-- [ ] Add Render and Vercel configuration and production CORS origins.
+- [x] Add Render and Vercel configuration and production CORS origins.
 - [ ] Run accessibility, security, performance, and log-sanitization reviews.
 - [ ] Prepare seeded demo and English interview architecture narrative.
 

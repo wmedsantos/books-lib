@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using BooksLib.Api.Data;
+using BooksLib.Api.Features.Audit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,14 +21,17 @@ public static class GenreEndpoints
             .WithOpenApi();
 
         group.MapPost("/", CreateGenre)
+            .RequireAuthorization("CatalogWrite")
             .WithName("CreateGenre")
             .WithOpenApi();
 
         group.MapPut("/{id:guid}", UpdateGenre)
+            .RequireAuthorization("CatalogWrite")
             .WithName("UpdateGenre")
             .WithOpenApi();
 
         group.MapDelete("/{id:guid}", DeleteGenre)
+            .RequireAuthorization("CatalogWrite")
             .WithName("DeleteGenre")
             .WithOpenApi();
 
@@ -141,6 +146,7 @@ public static class GenreEndpoints
 
     private static async Task<Results<NoContent, NotFound, Conflict<HttpValidationProblemDetails>>> DeleteGenre(
         CatalogDbContext db,
+        ClaimsPrincipal principal,
         Guid id)
     {
         var genre = await db.Genres.SingleOrDefaultAsync(genre => genre.Id == id && genre.DeletedAtUtc == null);
@@ -161,6 +167,7 @@ public static class GenreEndpoints
         }
 
         genre.SoftDelete();
+        db.AuditEntries.Add(AuditEntry.Create(principal.Identity?.Name ?? "unknown", "Genre", id, "SoftDelete"));
         await db.SaveChangesAsync();
 
         return TypedResults.NoContent();

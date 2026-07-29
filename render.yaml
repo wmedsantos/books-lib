@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: bookslib-api
+    runtime: docker
+    dockerfilePath: apps/api/Dockerfile
+    healthCheckPath: /health/ready
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__Catalog
+        sync: false
+      - key: Cors__AllowedOrigins__0
+        sync: false
+      - key: Jwt__SigningKey
+        sync: false
+      - key: Bootstrap__Email
+        sync: false
+      - key: Bootstrap__Password
+        sync: false

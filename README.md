@@ -5,9 +5,10 @@ Solutions**. It will manage books, authors, and genres while keeping the domain
 language broad enough for a future community and cultural collection at
 UBEMTEM.
 
-> **Current status:** Day 2 catalog core. The repository now contains a .NET 8
-> API, React/Vite SPA, PostgreSQL Compose setup, health checks, and management
-> flows for Books, Authors, and Genres.
+> **Current status:** Day 3 identity and delivery hardening. The repository now
+> contains a .NET 8 API, React/Vite SPA, PostgreSQL Compose setup, JWT-secured
+> write flows, public catalog reads, health checks, and management flows for
+> Books, Authors, and Genres.
 
 ## Run Locally
 
@@ -30,7 +31,18 @@ Local URLs:
 - Swagger: http://localhost:5080/swagger
 
 The API applies EF Core migrations at startup and seeds the system Author
-`Not Identified` plus the system Genre `Unclassified`.
+`Not Identified` plus the system Genre `Unclassified`. To seed the first
+catalog manager locally, provide bootstrap credentials before startup:
+
+```bash
+BOOKSLIB_BOOTSTRAP_EMAIL=admin@bookslib.local \
+BOOKSLIB_BOOTSTRAP_PASSWORD=ChangeMe123! \
+BOOKSLIB_JWT_SIGNING_KEY=local-development-signing-key-change-before-production-12345 \
+docker compose up --build
+```
+
+The bootstrap password is temporary. The first successful login requires a
+password change before write operations are allowed.
 
 Run quality checks:
 
@@ -64,7 +76,11 @@ the Node version currently installed on this machine.
    and import implications.
 9. [Delivery backlog](docs/backlog.md) — ordered, testable increments.
 10. [Day 1 checklist](docs/daily/day-01-walking-skeleton.md) — walking skeleton
-   progress and exit criteria.
+    progress and exit criteria.
+11. [Day 2 checklist](docs/daily/day-02-authors-books.md) — authors, books,
+    relationships, and validation.
+12. [Day 3 checklist](docs/daily/day-03-identity-public-catalog.md) — identity,
+    public catalog, audit, and delivery hardening.
 
 ## Planned stack
 

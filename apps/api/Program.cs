@@ -2,10 +2,15 @@ using BooksLib.Api.Data;
 using BooksLib.Api.Features.Authors;
 using BooksLib.Api.Features.Books;
 using BooksLib.Api.Features.Genres;
+using BooksLib.Api.Features.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +43,42 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<CatalogDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Catalog")));
+
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<IPasswordHasher<CatalogUser>, PasswordHasher<CatalogUser>>();
+
+var jwt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions();
+if (string.IsNullOrWhiteSpace(jwt.SigningKey))
+{
+    throw new InvalidOperationException("Jwt:SigningKey must be configured.");
+}
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            ValidIssuer = jwt.Issuer,
+            ValidAudience = jwt.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
+            ClockSkew = TimeSpan.FromMinutes(1)
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("CatalogWrite", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("pwd_expired", "false");
+    });
+});
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<CatalogDbContext>("postgresql");
@@ -74,6 +115,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("web");
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapHealthChecks("/health/live", new() { Predicate = _ => false });
 app.MapHealthChecks("/health/ready");
@@ -82,6 +125,8 @@ var api = app.MapGroup("/api/v1");
 api.MapAuthors();
 api.MapBooks();
 api.MapGenres();
+api.MapIdentity();
+api.MapPublicCatalog();
 
 if (app.Configuration.GetValue("Database:AutoMigrate", true))
 {

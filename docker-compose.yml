@@ -24,6 +24,9 @@ services:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__Catalog: Host=postgres;Port=5432;Database=bookslib;Username=bookslib;Password=bookslib_dev
       Cors__AllowedOrigins__0: http://localhost:5173
+      Jwt__SigningKey: ${BOOKSLIB_JWT_SIGNING_KEY:-local-development-signing-key-change-before-production-12345}
+      Bootstrap__Email: ${BOOKSLIB_BOOTSTRAP_EMAIL:-admin@bookslib.local}
+      Bootstrap__Password: ${BOOKSLIB_BOOTSTRAP_PASSWORD:-}
     ports:
       - "5080:8080"
     depends_on:

@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using BooksLib.Api.Data;
+using BooksLib.Api.Features.Audit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,9 +14,9 @@ public static class BookEndpoints
 
         group.MapGet("/", ListBooks).WithName("ListBooks").WithOpenApi();
         group.MapGet("/{id:guid}", GetBook).WithName("GetBook").WithOpenApi();
-        group.MapPost("/", CreateBook).WithName("CreateBook").WithOpenApi();
-        group.MapPut("/{id:guid}", UpdateBook).WithName("UpdateBook").WithOpenApi();
-        group.MapDelete("/{id:guid}", DeleteBook).WithName("DeleteBook").WithOpenApi();
+        group.MapPost("/", CreateBook).RequireAuthorization("CatalogWrite").WithName("CreateBook").WithOpenApi();
+        group.MapPut("/{id:guid}", UpdateBook).RequireAuthorization("CatalogWrite").WithName("UpdateBook").WithOpenApi();
+        group.MapDelete("/{id:guid}", DeleteBook).RequireAuthorization("CatalogWrite").WithName("DeleteBook").WithOpenApi();
 
         return api;
     }
@@ -129,7 +131,10 @@ public static class BookEndpoints
         return TypedResults.Ok(response!);
     }
 
-    private static async Task<Results<NoContent, NotFound>> DeleteBook(CatalogDbContext db, Guid id)
+    private static async Task<Results<NoContent, NotFound>> DeleteBook(
+        CatalogDbContext db,
+        ClaimsPrincipal principal,
+        Guid id)
     {
         var book = await db.Books.SingleOrDefaultAsync(book => book.Id == id && book.DeletedAtUtc == null);
         if (book is null)
@@ -138,6 +143,7 @@ public static class BookEndpoints
         }
 
         book.SoftDelete();
+        db.AuditEntries.Add(AuditEntry.Create(principal.Identity?.Name ?? "unknown", "Book", id, "SoftDelete"));
         await db.SaveChangesAsync();
 
         return TypedResults.NoContent();

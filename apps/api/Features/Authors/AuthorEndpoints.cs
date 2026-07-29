@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using BooksLib.Api.Data;
+using BooksLib.Api.Features.Audit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,9 +14,9 @@ public static class AuthorEndpoints
 
         group.MapGet("/", ListAuthors).WithName("ListAuthors").WithOpenApi();
         group.MapGet("/{id:guid}", GetAuthor).WithName("GetAuthor").WithOpenApi();
-        group.MapPost("/", CreateAuthor).WithName("CreateAuthor").WithOpenApi();
-        group.MapPut("/{id:guid}", UpdateAuthor).WithName("UpdateAuthor").WithOpenApi();
-        group.MapDelete("/{id:guid}", DeleteAuthor).WithName("DeleteAuthor").WithOpenApi();
+        group.MapPost("/", CreateAuthor).RequireAuthorization("CatalogWrite").WithName("CreateAuthor").WithOpenApi();
+        group.MapPut("/{id:guid}", UpdateAuthor).RequireAuthorization("CatalogWrite").WithName("UpdateAuthor").WithOpenApi();
+        group.MapDelete("/{id:guid}", DeleteAuthor).RequireAuthorization("CatalogWrite").WithName("DeleteAuthor").WithOpenApi();
 
         return api;
     }
@@ -127,6 +129,7 @@ public static class AuthorEndpoints
 
     private static async Task<Results<NoContent, NotFound, Conflict<HttpValidationProblemDetails>>> DeleteAuthor(
         CatalogDbContext db,
+        ClaimsPrincipal principal,
         Guid id)
     {
         var author = await db.Authors.SingleOrDefaultAsync(author => author.Id == id && author.DeletedAtUtc == null);
@@ -147,6 +150,7 @@ public static class AuthorEndpoints
         }
 
         author.SoftDelete();
+        db.AuditEntries.Add(AuditEntry.Create(principal.Identity?.Name ?? "unknown", "Author", id, "SoftDelete"));
         await db.SaveChangesAsync();
 
         return TypedResults.NoContent();

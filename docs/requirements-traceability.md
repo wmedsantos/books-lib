@@ -5,31 +5,31 @@ in the project conversation on 2026-07-29. The binary PDF is not committed in
 this repository revision, so page numbers are unavailable.
 
 This matrix converts the challenge into verifiable delivery evidence. Status is
-`Planned` until implementation or documentation exists; it is not a claim that
-the requirement has already been delivered.
+`Delivered` only when implementation, documentation, or automated evidence is
+present in the repository.
 
 | ID | Requirement | Planned evidence | Status |
 | --- | --- | --- | --- |
-| CH-01 | Deliver a .NET/C# REST API. | `/apps/api`, OpenAPI document, API tests | Planned |
-| CH-02 | Deliver a React or Angular SPA. | React application in `/apps/web` | Planned |
-| CH-03 | Use SQL Server, PostgreSQL, or MySQL and justify the choice. | PostgreSQL configuration, migrations, Architecture documentation | Planned |
-| CH-04 | Create, read/search, update, and delete genres. | Genre API slices, UI flow, automated tests | Planned |
-| CH-05 | Create, read/search, update, and delete authors. | Author API slices, UI flow, automated tests | Planned |
-| CH-06 | Create, read/search, update, and delete books. | Book API slices, UI flow, automated tests | Planned |
-| CH-07 | A genre may have many books; each book has one genre. | Required `books.genre_id` FK, migration, relationship tests | Planned |
-| CH-08 | An author may have many books; each book has one author. | Required `books.author_id` FK, migration, relationship tests | Planned |
-| CH-09 | Use clear organization and separation of responsibilities. | Vertical feature slices, ADR 0001, architecture review | Planned |
-| CH-10 | Handle errors and return consistent HTTP responses. | Global exception mapping, Problem Details contract, API tests | Planned |
-| CH-11 | Persist records in the selected relational database. | EF Core PostgreSQL migrations and integration tests | Planned |
-| CH-12 | Provide local execution configuration. | Docker Compose, environment example, README commands | Planned |
-| CH-13 | Automate tests for the main scenarios. | xUnit/FluentAssertions test projects and documented test command | Planned |
-| CH-14 | SPA lists, registers, edits, and removes all record types. | Route-level screens and browser-facing acceptance tests | Planned |
-| CH-15 | SPA shows the Book–Author–Genre relationship. | Book list/detail/form behavior | Planned |
-| CH-16 | UI is functional, organized, and understandable. | Consistent application shell and documented UX states | Planned |
-| CH-17 | README explains how to run the solution. | Root `README.md` local setup section | Planned |
-| CH-18 | Document overview, architecture, backend/frontend organization, database decision, and trade-offs. | README, Architecture, ADRs | In progress |
-| CH-19 | Document testing, known limitations, and improvements with more time. | README delivery sections | Planned |
-| CH-20 | Submit backend, frontend, database setup, documentation, and relevant tests in a repository. | Final repository audit | Planned |
+| CH-01 | Deliver a .NET/C# REST API. | `/apps/api`, OpenAPI document, API tests | Delivered |
+| CH-02 | Deliver a React or Angular SPA. | React application in `/apps/web` | Delivered |
+| CH-03 | Use SQL Server, PostgreSQL, or MySQL and justify the choice. | PostgreSQL configuration, migrations, Architecture documentation | Delivered |
+| CH-04 | Create, read/search, update, and delete genres. | Genre API slices, UI flow, automated tests | Delivered |
+| CH-05 | Create, read/search, update, and delete authors. | Author API slices, UI flow, automated tests | Delivered |
+| CH-06 | Create, read/search, update, and delete books. | Book API slices, UI flow, automated tests | Delivered |
+| CH-07 | A genre may have many books; each book has one genre. | Required `books.genre_id` FK, migration, relationship tests | Delivered |
+| CH-08 | An author may have many books; each book has one author. | Required `books.author_id` FK, migration, relationship tests | Delivered |
+| CH-09 | Use clear organization and separation of responsibilities. | Vertical feature slices, ADR 0001, architecture review | Delivered |
+| CH-10 | Handle errors and return consistent HTTP responses. | Global exception mapping, Problem Details contract, API tests | Delivered |
+| CH-11 | Persist records in the selected relational database. | EF Core PostgreSQL migrations and Docker smoke test | Delivered |
+| CH-12 | Provide local execution configuration. | Docker Compose, environment example, README commands | Delivered |
+| CH-13 | Automate tests for the main scenarios. | xUnit test projects and documented test command | Delivered |
+| CH-14 | SPA lists, registers, edits, and removes all record types. | Application screens for Books, Authors, and Genres | Delivered |
+| CH-15 | SPA shows the Book–Author–Genre relationship. | Book list and form display Author and Genre names | Delivered |
+| CH-16 | UI is functional, organized, and understandable. | Consistent application shell, validation states, auth states | Delivered |
+| CH-17 | README explains how to run the solution. | Root `README.md` local setup section | Delivered |
+| CH-18 | Document overview, architecture, backend/frontend organization, database decision, and trade-offs. | README, Architecture, ADRs | Delivered |
+| CH-19 | Document testing, known limitations, and improvements with more time. | README, backlog, and daily checklists | In progress |
+| CH-20 | Submit backend, frontend, database setup, documentation, and relevant tests in a repository. | Final repository audit | In progress |
 | CH-21 | Be ready to explain structure, decisions, alternatives, trade-offs, evolution, improvements, developer guidance, and review approach in English. | English presentation guide and ADRs | Planned |
 | CH-22 | Complete within three calendar days; prefer functional coherence over excessive scope. | Three-day backlog and daily checklists | In progress |
 
