@@ -59,13 +59,13 @@ display their author and genre.
 - [x] Implement an anonymous public projection restricted to active books with
   `publishOnSite = true` and active related records.
 - [x] Soft-delete in the same transaction as an append-only audit entry.
-- [ ] Implement a rerunnable JSON-to-PostgreSQL import script with dry-run mode,
+- [x] Implement a rerunnable CSV-to-PostgreSQL import script with dry-run mode,
   per-row validation, `Unclassified` Genre fallback, `Not Identified` Author
   fallback, duplicate strategy, transactional batches, and an outcome/error
   report.
-- [ ] Document import prerequisites, command, rollback, and source-file handling;
+- [x] Document import prerequisites, command, rollback, and source-file handling;
   never embed the catalog export in the application image.
-- [ ] Add automated tests for normalization, author resolution, fallback Author,
+- [x] Add automated tests for normalization, author resolution, fallback Author,
   fallback Genre, duplicates, invalid rows, and safe `publishOnSite = false`
   defaults.
 - [x] Add CI for API tests/build and web lint/typecheck/test/build.

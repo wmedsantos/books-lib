@@ -42,8 +42,8 @@ public static class BookFieldValidator
         ValidateLength(errors, "publisher", request.Publisher, 240);
         ValidateLength(errors, "collectionName", request.CollectionName, 240);
         ValidateLength(errors, "coverUrl", request.CoverUrl, 1000);
-        ValidateIsbn(errors, "isbn13", request.Isbn13, 13);
-        ValidateIsbn(errors, "isbn10", request.Isbn10, 10);
+        ValidateIsbn13(errors, request.Isbn13);
+        ValidateIsbn10(errors, request.Isbn10);
         ValidateCoverUrl(errors, request.CoverUrl);
 
         return errors.ToProblemErrors();
@@ -62,16 +62,32 @@ public static class BookFieldValidator
         }
     }
 
-    private static void ValidateIsbn(
-        Dictionary<string, List<string>> errors,
-        string field,
-        string? value,
-        int length)
+    private static void ValidateIsbn13(Dictionary<string, List<string>> errors, string? value)
     {
         var normalized = Book.NormalizeDisplayText(value);
-        if (normalized is not null && (normalized.Length != length || normalized.Any(character => !char.IsDigit(character))))
+        if (normalized is not null && (normalized.Length != 13 || normalized.Any(character => !char.IsDigit(character))))
         {
-            errors.AddError(field, $"{field} must contain exactly {length} digits.");
+            errors.AddError("isbn13", "isbn13 must contain exactly 13 digits.");
+        }
+    }
+
+    private static void ValidateIsbn10(Dictionary<string, List<string>> errors, string? value)
+    {
+        var normalized = Book.NormalizeDisplayText(value);
+        if (normalized is null)
+        {
+            return;
+        }
+
+        var hasValidCharacters = normalized
+            .Select((character, index) => index == 9
+                ? char.IsDigit(character) || char.ToUpperInvariant(character) == 'X'
+                : char.IsDigit(character))
+            .All(valid => valid);
+
+        if (normalized.Length != 10 || !hasValidCharacters)
+        {
+            errors.AddError("isbn10", "isbn10 must contain exactly 10 digits or 9 digits followed by X.");
         }
     }
 

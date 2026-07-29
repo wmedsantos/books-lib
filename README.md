@@ -48,6 +48,7 @@ Run quality checks:
 
 ```bash
 dotnet test BooksLib.sln
+python3 -m unittest tests/import_catalog_csv_tests.py
 npm --prefix apps/web run lint
 npm --prefix apps/web run build
 ```
@@ -56,6 +57,67 @@ The web runtime dependency audit is clean with `npm --prefix apps/web audit
 --omit=dev`. The full audit still reports the known Vite 5 development-server
 advisory; fixing it requires a Vite major upgrade that drops compatibility with
 the Node version currently installed on this machine.
+
+## Import the source catalog
+
+The source catalog export is read from `docs/input/library_20260729_190704.csv`.
+The importer writes directly to PostgreSQL and is designed to be run after the
+API has applied migrations.
+
+Create a local Python environment and install the importer dependency:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r scripts/requirements.txt
+```
+
+Validate the CSV and database writes without keeping any changes:
+
+```bash
+.venv/bin/python scripts/import_catalog_csv.py --dry-run --report /tmp/booklib-import-report.json
+```
+
+The `--dry-run` command intentionally rolls back the transaction, so it will not
+change what appears in the web app.
+
+Run the import against the local Docker Compose database:
+
+```bash
+.venv/bin/python scripts/import_catalog_csv.py --report /tmp/booklib-import-report.json
+```
+
+To fill missing cover URLs, add `--fetch-covers`. The importer first checks the
+local enriched Libib JSON at
+`docs/input/biblioteca_ubemtem_com_capas_libib_final.json` by ISBN and then by
+title:
+
+```bash
+.venv/bin/python scripts/import_catalog_csv.py --fetch-covers --report /tmp/booklib-import-report.json
+```
+
+To also try Google Books by ISBN when the local JSON has no cover, provide a
+Google Books API key through an environment variable:
+
+```bash
+GOOGLE_BOOKS_API_KEY=your-api-key \
+.venv/bin/python scripts/import_catalog_csv.py --fetch-covers --report /tmp/booklib-import-report.json
+```
+
+The cover lookup also works after the catalog has already been imported: rows
+detected as duplicates are skipped, but missing `cover_url` values on existing
+books are updated when a cover is found.
+
+The script defaults to:
+
+- database URL: `postgresql://bookslib:bookslib_dev@localhost:5432/bookslib`
+- source file: `docs/input/library_20260729_190704.csv`
+- `publishOnSite = false` for every imported book
+- Genre fallback: `Unclassified`
+- Author fallback: `Not Identified`
+
+Use `BOOKSLIB_DATABASE_URL` or `--database-url` to target another PostgreSQL
+database. Use `--publish-on-site` only for a reviewed source where public
+visibility is intentional.
 
 ## Start here
 

@@ -3,6 +3,8 @@ bin/
 obj/
 .vs/
 .vscode/
+.venv/
+__pycache__/
 TestResults/
 coverage/
 

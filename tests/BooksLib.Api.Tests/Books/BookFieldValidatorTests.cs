@@ -104,9 +104,9 @@ public sealed class BookFieldValidatorTests
     [Theory]
     [InlineData("isbn13", "978853470531", "isbn13 must contain exactly 13 digits.")]
     [InlineData("isbn13", "978853470531X", "isbn13 must contain exactly 13 digits.")]
-    [InlineData("isbn10", "853470531", "isbn10 must contain exactly 10 digits.")]
-    [InlineData("isbn10", "853470531X", "isbn10 must contain exactly 10 digits.")]
-    public void Validate_rejects_isbn_with_wrong_length_or_non_digits(string field, string value, string expected)
+    [InlineData("isbn10", "853470531", "isbn10 must contain exactly 10 digits or 9 digits followed by X.")]
+    [InlineData("isbn10", "85347053XX", "isbn10 must contain exactly 10 digits or 9 digits followed by X.")]
+    public void Validate_rejects_invalid_isbn_values(string field, string value, string expected)
     {
         var request = field == "isbn13"
             ? ValidRequest() with { Isbn13 = value }
@@ -123,7 +123,7 @@ public sealed class BookFieldValidatorTests
         var errors = BookFieldValidator.Validate(ValidRequest() with
         {
             Isbn13 = "9788534705317",
-            Isbn10 = "8534705317"
+            Isbn10 = "853470531X"
         });
 
         Assert.Empty(errors);

@@ -35,11 +35,11 @@ append-only audit rows for deletes, and prepare repeatable delivery checks.
 - [x] CI workflow added.
 - [x] Render and Vercel configuration added.
 - [x] Identity and audit tests added.
-- [ ] JSON-to-PostgreSQL import script.
+- [x] CSV-to-PostgreSQL import script.
 - [ ] Full accessibility, security, performance, and log-sanitization review.
 
 ## Development notes
 
-The import script remains the main open delivery-hardening item. The database
-and API now include the fallback Author `Not Identified` and Genre
-`Unclassified` that the importer will rely on.
+The importer now uses the official CSV export in `docs/input/` instead of the
+previous JSON analysis artifact. The database and API include the fallback
+Author `Not Identified` and Genre `Unclassified` that the importer relies on.
