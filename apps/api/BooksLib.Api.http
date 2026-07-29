@@ -1,0 +1,17 @@
+@BooksLib.Api_HostAddress = http://localhost:5080
+
+GET {{BooksLib.Api_HostAddress}}/health/ready
+
+###
+
+GET {{BooksLib.Api_HostAddress}}/api/v1/genres
+Accept: application/json
+
+###
+
+POST {{BooksLib.Api_HostAddress}}/api/v1/genres
+Content-Type: application/json
+
+{
+  "name": "Poetry"
+}

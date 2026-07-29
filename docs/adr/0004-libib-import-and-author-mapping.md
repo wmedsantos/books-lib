@@ -14,7 +14,8 @@ also strings.
 ## Decision
 
 1. Use `libib_author` as the canonical primary Author name for import and make
-   the resulting `author_id` required.
+   the resulting `author_id` required. When `libib_author` is missing, resolve
+   the row to the controlled fallback Author `Not Identified`.
 2. Preserve `creators` as optional `creator_credit` text when it conveys
    additional source attribution. It is not a second Author relationship.
 3. Ignore `first_name`/`last_name` for identity resolution; they are incomplete
@@ -27,6 +28,11 @@ also strings.
    Resolve it by immutable system code `unclassified`, and prevent rename or
    deletion through normal Genre operations.
 6. Default every imported Book to `publish_on_site = false`.
+7. Treat duplicate source rows deterministically. If two rows have the same
+   normalized title and the same populated ISBN, discard the later duplicate and
+   report it. If the normalized title matches but the ISBN differs, import the
+   later row as a likely separate edition by appending one period to the title
+   before persistence.
 
 ## Rationale
 
@@ -34,7 +40,8 @@ This preserves the challenge's required cardinality and the source's visible
 credit without prematurely introducing contributor entities or a many-to-many
 Author model. A boundary DTO prevents Libib-specific fields and string encoding
 from contaminating the catalog domain. Publication opt-in is the safe default
-for a public endpoint.
+for a public endpoint. The fallback Author keeps imports deterministic without
+inventing a personal name when the source has no author signal.
 
 ## Consequences
 
@@ -44,6 +51,8 @@ for a public endpoint.
 - Additional creator attribution is not discarded.
 - Import failures can be corrected without partially persisted rows.
 - Unknown classification is visible and searchable rather than fabricated.
+- Missing authorship is visible and searchable rather than blocking the import.
+- Duplicate handling is repeatable and produces a reviewable report.
 
 ### Negative
 
@@ -51,6 +60,9 @@ for a public endpoint.
 - Name-based resolution can merge homonyms or split spelling variants; the
   importer must report proposed matches for review.
 - Imported records require later catalog curation to replace `Unclassified`.
+- Records assigned to `Not Identified` require later authorship curation.
+- Appending a period to title-only duplicate editions is intentionally simple
+  but may need richer edition metadata later.
 
 ## Alternatives considered
 
@@ -64,9 +76,14 @@ for a public endpoint.
   would reduce catalog trust and add operational complexity.
 - **Reject every record without Genre:** rejected because the current source has
   no Genre data and the import would provide no catalog value.
+- **Reject every record without Author:** rejected because the product decision
+  is to preserve those catalog entries with the visible `Not Identified`
+  fallback.
+- **Merge every duplicate title:** rejected because a same-title row with a
+  different ISBN may represent a second edition.
 
 ## Revisit when
 
-The full export reveals missing `libib_author`, a reliable Genre field, or a
-validated need to search and manage all contributors independently. If a Genre
-source is added later, explicit source values take precedence over the fallback.
+A reliable Genre field, edition metadata, or a validated need to search and
+manage all contributors independently appears. If a Genre source is added later,
+explicit source values take precedence over the fallback.

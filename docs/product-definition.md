@@ -1,6 +1,6 @@
 # Product Definition
 
-**Status:** Challenge validated; catalog-data analysis pending<br>
+**Status:** Challenge and catalog data validated for MVP development<br>
 **Last updated:** 2026-07-29<br>
 **Product:** Books Library
 
@@ -90,6 +90,8 @@ requires them and they provide coherent operational value.
   later by a catalog manager.
 - The fallback is identified by the stable system code `unclassified`, not by a
   display-name comparison, and cannot be renamed or deleted.
+- `Not Identified` is the controlled fallback Author for imported source records
+  without `libib_author`.
 - Books, authors, and genres are soft-deleted. Delete operations record actor,
   timestamp, entity type, entity ID, and operation in an audit log.
 - An author or genre with active books cannot be deleted; the API returns a
@@ -102,15 +104,14 @@ requires them and they provide coherent operational value.
 - Pagination has a bounded page size; the proposed default is 20 and maximum is
   100.
 
-## 5.1 Provisional Book fields from the supplied sample
+## 5.1 Book fields from the supplied export
 
-The three supplied Libib records justify the following initial mapping. It
-remains provisional until the full export is profiled:
+The supplied Libib export justifies the following initial mapping:
 
 | Domain field | Source | Requirement | Notes |
 | --- | --- | --- | --- |
 | `title` | `title` | Required | Preserve display casing; validate trimmed value. |
-| `authorId` | resolved from `libib_author` | Required | Canonical single primary author required by the challenge. |
+| `authorId` | resolved from `libib_author` | Required | Canonical single primary author required by the challenge; missing values use `Not Identified`. |
 | `creatorCredit` | `creators` | Optional | Preserve additional source credits without modeling a many-to-many relationship. |
 | `genreId` | system fallback | Required | Resolve the `Unclassified` Genre because the source has no classification. |
 | `isbn13` | `ean_isbn13` | Optional | Store as text; validate checksum only when populated. |
@@ -125,11 +126,12 @@ remains provisional until the full export is profiled:
 | `sourceAddedOn` | `added` | Optional import provenance | Source date, distinct from application audit timestamps. |
 | `publishOnSite` | no source field | Required, default `false` | Publication is opt-in; imported records must never become public implicitly. |
 
-`libib_title` duplicates `title` in the sample and is not a second domain field.
+`libib_title` is import provenance and not a second domain field.
 `first_name` and `last_name` are not authoritative for the full creator credit:
-the first sample has two creators but only the first person's split name. The
-application derives the primary Author display name from `libib_author` and
-keeps the original `creators` value as `creatorCredit`.
+some records have multiple creators but only the first person's split name. The
+application derives the primary Author display name from `libib_author`, uses
+`Not Identified` when the source author is missing, and keeps the original
+`creators` value as `creatorCredit`.
 
 ## 6. MVP acceptance criteria
 
@@ -216,23 +218,23 @@ therefore prioritizes, in order:
 5. required case-study differentiators, implemented without displacing the core
    challenge behavior.
 
-## 12. Remaining blocker
+## 12. Import execution caveat
 
-The challenge and a three-record JSON sample have been supplied in the project
-conversation. This supports a provisional schema, documented in
-[Sample data analysis](catalog-data-analysis.md), but not dataset-wide
-conclusions. Before executing the importer against production catalog data, the
-full export or an aggregate profile must still establish:
+The full JSON export has been profiled in
+[Catalog data analysis](catalog-data-analysis.md). It supports the MVP schema
+and does not block the walking skeleton, Genre/Author management, or Book CRUD.
+Before executing the importer against the complete source, the import slice must
+handle:
 
-- inventory JSON keys, types, nullability, value ranges, duplicates, and cover
-  representation without publishing personal or sensitive data;
-- how often `creators` and `libib_author` disagree and whether any primary author
-  is missing;
-- whether ISBNs, titles, cover URLs, dates, and numeric strings are malformed or
-  duplicated;
-- whether non-book `item_type` values exist and must be rejected.
+- three rows with missing `libib_author`, which will use the `Not Identified`
+  Author;
+- one normalized title collision: `O Tupi Que Você Fala`; matching ISBN
+  duplicates are discarded, while different-ISBN title collisions are imported
+  with one period appended to the later title as likely separate editions;
+- optional ISBNs, publisher, publication date, page count, and cover URL;
+- the confirmed absence of Genre information, using the system
+  `Unclassified` fallback.
 
-The walking skeleton, Genre/Author management, and Book CRUD no longer depend on
-this profile. The import script can use `Unclassified`; full profiling is still
-required before executing it against the complete source so malformed or
-duplicate rows are handled deliberately.
+The import script can be developed with fixtures before real execution, but the
+final run must produce a report for discarded duplicates, title adjustments,
+fallback Author usage, and fallback Genre usage.

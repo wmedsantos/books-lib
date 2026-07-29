@@ -1,0 +1,11 @@
+.git
+.DS_Store
+
+**/bin
+**/obj
+**/node_modules
+**/dist
+**/.vite
+
+docs/biblioteca_ubemtem_com_capas_libib_final.json
+docs/Technical Challenge.pdf

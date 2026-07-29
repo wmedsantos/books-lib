@@ -41,22 +41,23 @@ challenge contract.
 - [x] README entry point created.
 - [x] Challenge statement received and requirements extracted.
 - [x] Three representative UBEMTEM JSON records received and profiled.
-- [ ] Full UBEMTEM export or aggregate profile received.
+- [x] Full UBEMTEM export or aggregate profile received.
 - [x] Stakeholder decisions recorded for access, relationships, deletion,
   auditing, and bootstrap identity.
 - [x] Delivery requirements captured in a traceability matrix.
 - [x] Provisional source-to-domain mapping documented.
 - [x] Missing-Genre policy confirmed as the controlled `Unclassified` fallback.
-- [ ] Dataset-wide distributions confirmed.
+- [x] Dataset-wide distributions confirmed.
 - [x] ADR 0004 accepted for source import mapping.
-- [ ] Day 1 checklist created immediately before the walking skeleton.
+- [x] Day 1 checklist created immediately before the walking skeleton.
 
 ## Review notes
 
 The supplied challenge confirms the delivery shape and three-day timebox. The
-sample confirms the core bibliographic fields but reveals two important facts:
-`creators` may contain multiple credits while the challenge requires one Author,
-and no reliable Genre value is present. ADR 0004 resolves the former without
-violating the challenge and resolves the latter with the explicit `Unclassified`
-fallback. Full profiling is required before production import execution, not
-before the Day 1 walking skeleton.
+full export confirms the core bibliographic fields and shows two important
+facts: `creators` may contain multiple credits while the challenge requires one
+Author, and no reliable Genre value is present. ADR 0004 resolves the former
+without violating the challenge and resolves the latter with the explicit
+`Unclassified` fallback. Import execution remains a later slice, with the known
+edge cases resolved by `Not Identified` for missing source authors and the
+confirmed duplicate-title strategy.

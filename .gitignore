@@ -1,0 +1,15 @@
+.DS_Store
+bin/
+obj/
+.vs/
+.vscode/
+TestResults/
+coverage/
+
+node_modules/
+dist/
+.vite/
+
+.env
+.env.*
+!.env.example

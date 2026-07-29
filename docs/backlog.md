@@ -11,23 +11,23 @@ logging review, and updated daily checklist.
 - [x] Identify missing requirements that block implementation.
 - [x] Extract the supplied challenge statement into traceable requirements.
 - [x] Analyze the three-record UBEMTEM sample and document provisional mapping.
-- [ ] Analyze the full UBEMTEM export or an aggregate profile.
+- [x] Analyze the full UBEMTEM export or an aggregate profile.
 - [x] Confirm relationships, authorization, deletion, and public access.
 - [x] Confirm delivery requirements from the challenge statement.
 - [x] Confirm provisional Book fields from the sample.
 - [x] Confirm `Unclassified` as the missing-Genre import fallback.
-- [ ] Confirm dataset-wide field quality before executing an import.
+- [x] Confirm dataset-wide field quality before executing an import.
 
 ## Day 1 — Walking skeleton and reference-data path
 
-- [ ] Scaffold `/apps/api` and `/apps/web` with pinned supported dependencies.
-- [ ] Add formatting, analyzers, type-checking, and test commands.
-- [ ] Add PostgreSQL and both applications to Docker Compose.
-- [ ] Add API Problem Details, Serilog request logging, CORS, OpenAPI, and live/
+- [x] Scaffold `/apps/api` and `/apps/web` with pinned supported dependencies.
+- [x] Add formatting, analyzers, type-checking, and test commands.
+- [x] Add PostgreSQL and both applications to Docker Compose.
+- [x] Add API Problem Details, Serilog request logging, CORS, OpenAPI, and live/
   ready health endpoints.
-- [ ] Render a web shell that calls API health through the configured Axios
+- [x] Render a web shell that calls API health through the configured Axios
   client and TanStack Query.
-- [ ] Complete the Genre API and UI walking feature with its main tests.
+- [x] Complete the Genre API and UI walking feature with its main tests.
 
 **Acceptance:** one documented command starts the system; health is visible end
 to end; quality commands run locally; Genre management works through the SPA,
@@ -58,12 +58,14 @@ display their author and genre.
   `publishOnSite = true` and active related records.
 - [ ] Soft-delete in the same transaction as an append-only audit entry.
 - [ ] Implement a rerunnable JSON-to-PostgreSQL import script with dry-run mode,
-  per-row validation, `Unclassified` Genre fallback, duplicate strategy,
-  transactional batches, and an outcome/error report.
+  per-row validation, `Unclassified` Genre fallback, `Not Identified` Author
+  fallback, duplicate strategy, transactional batches, and an outcome/error
+  report.
 - [ ] Document import prerequisites, command, rollback, and source-file handling;
   never embed the catalog export in the application image.
-- [ ] Add automated tests for normalization, author resolution, fallback Genre,
-  duplicates, invalid rows, and safe `publishOnSite = false` defaults.
+- [ ] Add automated tests for normalization, author resolution, fallback Author,
+  fallback Genre, duplicates, invalid rows, and safe `publishOnSite = false`
+  defaults.
 - [ ] Add CI for API tests/build and web lint/typecheck/test/build.
 - [ ] Document environment variables, migrations, backup, deployment, and
   rollback.

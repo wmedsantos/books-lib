@@ -1,14 +1,49 @@
 # Books Library
 
-Books Library is the planned catalog-management case study from **AyaX IT
+Books Library is the catalog-management case study from **AyaX IT
 Solutions**. It will manage books, authors, and genres while keeping the domain
 language broad enough for a future community and cultural collection at
 UBEMTEM.
 
-> **Current status: discovery and architecture baseline.** The repository did
-> not include the original challenge statement. In accordance with the project
-> workflow, implementation is intentionally gated until the open product
-> questions in the [Product Definition](docs/product-definition.md) are answered.
+> **Current status:** Day 1 walking skeleton. The repository now contains a
+> .NET 8 API, React/Vite SPA, PostgreSQL Compose setup, health checks, and the
+> first Genre management slice.
+
+## Run Locally
+
+Prerequisites:
+
+- .NET SDK 8.0
+- Node.js 18.17 or newer
+- Docker 24 or newer
+
+Start the full local system:
+
+```bash
+docker compose up --build
+```
+
+Local URLs:
+
+- Web: http://localhost:5173
+- API health: http://localhost:5080/health/ready
+- Swagger: http://localhost:5080/swagger
+
+The API applies EF Core migrations at startup and seeds the system Genre
+`Unclassified` with immutable code `unclassified`.
+
+Run quality checks:
+
+```bash
+dotnet test BooksLib.sln
+npm --prefix apps/web run lint
+npm --prefix apps/web run build
+```
+
+The web runtime dependency audit is clean with `npm --prefix apps/web audit
+--omit=dev`. The full audit still reports the known Vite 5 development-server
+advisory; fixing it requires a Vite major upgrade that drops compatibility with
+the Node version currently installed on this machine.
 
 ## Start here
 
@@ -25,20 +60,20 @@ UBEMTEM.
    — public catalog, deletion/audit, cardinality, and identity bootstrap.
 7. [ADR 0004](docs/adr/0004-libib-import-and-author-mapping.md) — source-data
    mapping and single-author compatibility.
-8. [Sample data analysis](docs/catalog-data-analysis.md) — provisional field
-   profile and remaining full-export checks.
+8. [Catalog data analysis](docs/catalog-data-analysis.md) — full export profile
+   and import implications.
 9. [Delivery backlog](docs/backlog.md) — ordered, testable increments.
-10. [Day 0 checklist](docs/daily/day-00-discovery.md) — current progress and exit
-   criteria.
+10. [Day 1 checklist](docs/daily/day-01-walking-skeleton.md) — walking skeleton
+   progress and exit criteria.
 
 ## Planned stack
 
 | Area | Choice | Purpose |
 | --- | --- | --- |
-| Web | React, Vite, TypeScript, React Router, TanStack Query, Tailwind CSS, Axios | Accessible, type-safe administration UI |
+| Web | React, Vite, TypeScript, TanStack Query, Axios | Accessible, type-safe administration UI |
 | API | .NET 8, ASP.NET Core, EF Core, FluentValidation, JWT, Swagger | Explicit HTTP application boundary |
 | Data | PostgreSQL | Durable relational catalog model |
-| Quality | xUnit, FluentAssertions | Behaviour-focused automated tests |
+| Quality | xUnit, TypeScript build checks | Behaviour-focused automated tests and fast client feedback |
 | Operations | Docker Compose, Render, Vercel, Serilog, Health Checks | Repeatable local operation and low-cost deployment |
 
 Dependencies will be added only with the feature that needs them. This keeps
