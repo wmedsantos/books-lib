@@ -8,6 +8,7 @@ const api = axios.create({
 })
 
 type Tab = 'books' | 'authors' | 'genres'
+type Language = 'en' | 'pt' | 'es'
 
 type ReferenceRecord = {
   id: string
@@ -97,8 +98,209 @@ const emptyBookForm: BookForm = {
 
 const bookPageSize = 10
 
+const languages: Array<{ code: Language; label: string }> = [
+  { code: 'en', label: 'English' },
+  { code: 'pt', label: 'Português' },
+  { code: 'es', label: 'Español' },
+]
+
+const translations = {
+  en: {
+    activeRecords: 'active records',
+    all: 'All',
+    api: 'API',
+    author: 'Author',
+    authors: 'Authors',
+    books: 'Books',
+    cancel: 'Cancel',
+    catalogAdministration: 'Catalog Administration',
+    catalogSections: 'Catalog sections',
+    catalogSignIn: 'Catalog Sign In',
+    changePassword: 'Change Password',
+    collection: 'Collection',
+    copies: 'Copies',
+    coverOf: 'Cover of',
+    coverUrl: 'Cover URL',
+    create: 'Create',
+    creatorCredit: 'Creator Credit',
+    currentPassword: 'Current Password',
+    delete: 'Delete',
+    description: 'Description',
+    edit: 'Edit',
+    editAuthor: 'Edit Author',
+    editBook: 'Edit Book',
+    editGenre: 'Edit Genre',
+    email: 'Email',
+    genre: 'Genre',
+    genres: 'Genres',
+    language: 'Language',
+    loadingBooks: 'Loading books...',
+    loadingRecords: 'Loading records...',
+    name: 'Name',
+    newAuthor: 'New Author',
+    newBook: 'New Book',
+    newGenre: 'New Genre',
+    newPassword: 'New Password',
+    next: 'Next',
+    noBooksFound: 'No books found.',
+    noRecordsFound: 'No records found.',
+    page: 'Page',
+    pageCount: 'Page Count',
+    password: 'Password',
+    previous: 'Previous',
+    publishOnSite: 'Publish on site',
+    published: 'Published',
+    publisher: 'Publisher',
+    requestFailed: 'Request failed.',
+    save: 'Save',
+    savePassword: 'Save Password',
+    search: 'Search',
+    selectAuthor: 'Select author',
+    selectGenre: 'Select genre',
+    showing: 'Showing',
+    signIn: 'Sign In',
+    signOut: 'Sign Out',
+    system: 'System',
+    title: 'Title',
+    of: 'of',
+    statusChecking: 'checking',
+    statusDegraded: 'degraded',
+    statusOffline: 'offline',
+    statusReady: 'ready',
+  },
+  pt: {
+    activeRecords: 'registros ativos',
+    all: 'Todos',
+    api: 'API',
+    author: 'Autor',
+    authors: 'Autores',
+    books: 'Livros',
+    cancel: 'Cancelar',
+    catalogAdministration: 'Administração do Catálogo',
+    catalogSections: 'Seções do catálogo',
+    catalogSignIn: 'Entrar no Catálogo',
+    changePassword: 'Alterar Senha',
+    collection: 'Coleção',
+    copies: 'Cópias',
+    coverOf: 'Capa de',
+    coverUrl: 'URL da capa',
+    create: 'Criar',
+    creatorCredit: 'Crédito de criação',
+    currentPassword: 'Senha atual',
+    delete: 'Excluir',
+    description: 'Descrição',
+    edit: 'Editar',
+    editAuthor: 'Editar Autor',
+    editBook: 'Editar Livro',
+    editGenre: 'Editar Gênero',
+    email: 'Email',
+    genre: 'Gênero',
+    genres: 'Gêneros',
+    language: 'Idioma',
+    loadingBooks: 'Carregando livros...',
+    loadingRecords: 'Carregando registros...',
+    name: 'Nome',
+    newAuthor: 'Novo Autor',
+    newBook: 'Novo Livro',
+    newGenre: 'Novo Gênero',
+    newPassword: 'Nova senha',
+    next: 'Próxima',
+    noBooksFound: 'Nenhum livro encontrado.',
+    noRecordsFound: 'Nenhum registro encontrado.',
+    page: 'Página',
+    pageCount: 'Número de páginas',
+    password: 'Senha',
+    previous: 'Anterior',
+    publishOnSite: 'Publicar no site',
+    published: 'Publicado',
+    publisher: 'Editora',
+    requestFailed: 'A requisição falhou.',
+    save: 'Salvar',
+    savePassword: 'Salvar senha',
+    search: 'Buscar',
+    selectAuthor: 'Selecione o autor',
+    selectGenre: 'Selecione o gênero',
+    showing: 'Mostrando',
+    signIn: 'Entrar',
+    signOut: 'Sair',
+    system: 'Sistema',
+    title: 'Título',
+    of: 'de',
+    statusChecking: 'verificando',
+    statusDegraded: 'degradada',
+    statusOffline: 'offline',
+    statusReady: 'pronta',
+  },
+  es: {
+    activeRecords: 'registros activos',
+    all: 'Todos',
+    api: 'API',
+    author: 'Autor',
+    authors: 'Autores',
+    books: 'Libros',
+    cancel: 'Cancelar',
+    catalogAdministration: 'Administración del Catálogo',
+    catalogSections: 'Secciones del catálogo',
+    catalogSignIn: 'Acceso al Catálogo',
+    changePassword: 'Cambiar Contraseña',
+    collection: 'Colección',
+    copies: 'Copias',
+    coverOf: 'Portada de',
+    coverUrl: 'URL de portada',
+    create: 'Crear',
+    creatorCredit: 'Crédito de creación',
+    currentPassword: 'Contraseña actual',
+    delete: 'Eliminar',
+    description: 'Descripción',
+    edit: 'Editar',
+    editAuthor: 'Editar Autor',
+    editBook: 'Editar Libro',
+    editGenre: 'Editar Género',
+    email: 'Email',
+    genre: 'Género',
+    genres: 'Géneros',
+    language: 'Idioma',
+    loadingBooks: 'Cargando libros...',
+    loadingRecords: 'Cargando registros...',
+    name: 'Nombre',
+    newAuthor: 'Nuevo Autor',
+    newBook: 'Nuevo Libro',
+    newGenre: 'Nuevo Género',
+    newPassword: 'Nueva contraseña',
+    next: 'Siguiente',
+    noBooksFound: 'No se encontraron libros.',
+    noRecordsFound: 'No se encontraron registros.',
+    page: 'Página',
+    pageCount: 'Número de páginas',
+    password: 'Contraseña',
+    previous: 'Anterior',
+    publishOnSite: 'Publicar en el sitio',
+    published: 'Publicado',
+    publisher: 'Editorial',
+    requestFailed: 'La solicitud falló.',
+    save: 'Guardar',
+    savePassword: 'Guardar contraseña',
+    search: 'Buscar',
+    selectAuthor: 'Seleccione autor',
+    selectGenre: 'Seleccione género',
+    showing: 'Mostrando',
+    signIn: 'Entrar',
+    signOut: 'Salir',
+    system: 'Sistema',
+    title: 'Título',
+    of: 'de',
+    statusChecking: 'verificando',
+    statusDegraded: 'degradada',
+    statusOffline: 'offline',
+    statusReady: 'lista',
+  },
+} as const
+
+type TranslationSet = Record<keyof typeof translations.en, string>
+
 function App() {
   const queryClient = useQueryClient()
+  const [language, setLanguage] = useState<Language>(() => readLanguageCookie())
   const [session, setSession] = useState<Session | null>(() => readSession())
   const [loginEmail, setLoginEmail] = useState('admin@bookslib.local')
   const [loginPassword, setLoginPassword] = useState('')
@@ -115,6 +317,12 @@ function App() {
   const [referenceName, setReferenceName] = useState('')
   const [editingReference, setEditingReference] = useState<ReferenceRecord | null>(null)
   const [editingReferenceName, setEditingReferenceName] = useState('')
+  const t: TranslationSet = translations[language]
+
+  useEffect(() => {
+    document.documentElement.lang = language
+    document.cookie = `books-lib-language=${language}; Max-Age=31536000; Path=/; SameSite=Lax`
+  }, [language])
 
   useEffect(() => {
     if (session) {
@@ -344,7 +552,7 @@ function App() {
 
   if (!session) {
     return (
-      <AuthShell healthLabel={healthLabel}>
+      <AuthShell healthLabel={healthLabel} language={language} onLanguageChange={setLanguage} t={t}>
         <form
           className="auth-card form-stack"
           onSubmit={(event) => {
@@ -352,8 +560,8 @@ function App() {
             login.mutate()
           }}
         >
-          <h1>Catalog Sign In</h1>
-          <label htmlFor="login-email">Email</label>
+          <h1>{t.catalogSignIn}</h1>
+          <label htmlFor="login-email">{t.email}</label>
           <input
             id="login-email"
             className={fieldClass(loginErrors, 'email')}
@@ -363,7 +571,7 @@ function App() {
           />
           <FieldMessages errors={loginErrors} field="email" />
 
-          <label htmlFor="login-password">Password</label>
+          <label htmlFor="login-password">{t.password}</label>
           <input
             id="login-password"
             className={fieldClass(loginErrors, 'password')}
@@ -374,9 +582,9 @@ function App() {
           />
           <FieldMessages errors={loginErrors} field="password" />
 
-          {login.isError && <ProblemMessage error={login.error} />}
+          {login.isError && <ProblemMessage error={login.error} t={t} />}
           <button type="submit" disabled={login.isPending}>
-            Sign In
+            {t.signIn}
           </button>
         </form>
       </AuthShell>
@@ -385,7 +593,7 @@ function App() {
 
   if (session.passwordChangeRequired) {
     return (
-      <AuthShell healthLabel={healthLabel}>
+      <AuthShell healthLabel={healthLabel} language={language} onLanguageChange={setLanguage} t={t}>
         <form
           className="auth-card form-stack"
           onSubmit={(event) => {
@@ -393,9 +601,9 @@ function App() {
             changePassword.mutate()
           }}
         >
-          <h1>Change Password</h1>
+          <h1>{t.changePassword}</h1>
           <p className="muted">{session.email}</p>
-          <label htmlFor="current-password">Current Password</label>
+          <label htmlFor="current-password">{t.currentPassword}</label>
           <input
             id="current-password"
             className={fieldClass(changePasswordErrors, 'currentPassword')}
@@ -406,7 +614,7 @@ function App() {
           />
           <FieldMessages errors={changePasswordErrors} field="currentPassword" />
 
-          <label htmlFor="new-password">New Password</label>
+          <label htmlFor="new-password">{t.newPassword}</label>
           <input
             id="new-password"
             className={fieldClass(changePasswordErrors, 'newPassword')}
@@ -417,13 +625,13 @@ function App() {
           />
           <FieldMessages errors={changePasswordErrors} field="newPassword" />
 
-          {changePassword.isError && <ProblemMessage error={changePassword.error} />}
+          {changePassword.isError && <ProblemMessage error={changePassword.error} t={t} />}
           <div className="actions">
             <button type="submit" disabled={changePassword.isPending}>
-              Save Password
+              {t.savePassword}
             </button>
             <button type="button" className="secondary" onClick={() => setSession(null)}>
-              Sign Out
+              {t.signOut}
             </button>
           </div>
         </form>
@@ -436,35 +644,35 @@ function App() {
       <header className="topbar">
         <div>
           <p className="eyebrow">Books Library</p>
-          <h1>Catalog Administration</h1>
+          <h1>{t.catalogAdministration}</h1>
         </div>
-        <div className={`health health-${healthLabel}`}>
-          <span aria-hidden="true" />
-          API {healthLabel}
-        </div>
-        <button type="button" className="secondary" onClick={() => setSession(null)}>
-          Sign Out
-        </button>
+        <TopbarActions
+          healthLabel={healthLabel}
+          language={language}
+          onLanguageChange={setLanguage}
+          onSignOut={() => setSession(null)}
+          t={t}
+        />
       </header>
 
-      <nav className="tabs" aria-label="Catalog sections">
+      <nav className="tabs" aria-label={t.catalogSections}>
         <button type="button" className={tab === 'books' ? 'active' : ''} onClick={() => setTab('books')}>
-          Books
+          {t.books}
         </button>
         <button type="button" className={tab === 'authors' ? 'active' : ''} onClick={() => setTab('authors')}>
-          Authors
+          {t.authors}
         </button>
         <button type="button" className={tab === 'genres' ? 'active' : ''} onClick={() => setTab('genres')}>
-          Genres
+          {t.genres}
         </button>
       </nav>
 
       {tab === 'books' ? (
         <section className="workspace book-workspace" aria-label="Book management">
           <aside className="panel">
-            <h2>{editingBookId ? 'Edit Book' : 'New Book'}</h2>
+            <h2>{editingBookId ? t.editBook : t.newBook}</h2>
             <form onSubmit={submitBook} className="form-stack">
-              <label htmlFor="book-title">Title</label>
+              <label htmlFor="book-title">{t.title}</label>
               <input
                 id="book-title"
                 className={fieldClass(bookErrors, 'title')}
@@ -475,7 +683,7 @@ function App() {
               />
               <FieldMessages errors={bookErrors} field="title" />
 
-              <label htmlFor="book-author">Author</label>
+              <label htmlFor="book-author">{t.author}</label>
               <select
                 id="book-author"
                 className={fieldClass(bookErrors, 'authorId')}
@@ -483,7 +691,7 @@ function App() {
                 value={bookForm.authorId}
                 onChange={(event) => setBookFormField('authorId', event.target.value)}
               >
-                <option value="">Select author</option>
+                <option value="">{t.selectAuthor}</option>
                 {authors.map((author) => (
                   <option key={author.id} value={author.id}>
                     {author.name}
@@ -492,7 +700,7 @@ function App() {
               </select>
               <FieldMessages errors={bookErrors} field="authorId" />
 
-              <label htmlFor="book-genre">Genre</label>
+              <label htmlFor="book-genre">{t.genre}</label>
               <select
                 id="book-genre"
                 className={fieldClass(bookErrors, 'genreId')}
@@ -500,7 +708,7 @@ function App() {
                 value={bookForm.genreId}
                 onChange={(event) => setBookFormField('genreId', event.target.value)}
               >
-                <option value="">Select genre</option>
+                <option value="">{t.selectGenre}</option>
                 {genres.map((genre) => (
                   <option key={genre.id} value={genre.id}>
                     {genre.name}
@@ -509,7 +717,7 @@ function App() {
               </select>
               <FieldMessages errors={bookErrors} field="genreId" />
 
-              <label htmlFor="book-copies">Copies</label>
+              <label htmlFor="book-copies">{t.copies}</label>
               <input
                 id="book-copies"
                 className={fieldClass(bookErrors, 'copyCount')}
@@ -548,7 +756,7 @@ function App() {
 
               <div className="form-grid">
                 <label>
-                  <span>Publisher</span>
+                  <span>{t.publisher}</span>
                   <input
                     className={fieldClass(bookErrors, 'publisher')}
                     aria-invalid={hasFieldError(bookErrors, 'publisher')}
@@ -558,14 +766,14 @@ function App() {
                   <FieldMessages errors={bookErrors} field="publisher" />
                 </label>
                 <label>
-                  <span>Published</span>
+                  <span>{t.published}</span>
                   <input type="date" value={bookForm.publishedOn} onChange={(event) => setBookFormField('publishedOn', event.target.value)} />
                 </label>
               </div>
 
               <div className="form-grid">
                 <label>
-                  <span>Page Count</span>
+                  <span>{t.pageCount}</span>
                   <input
                     className={fieldClass(bookErrors, 'pageCount')}
                     aria-invalid={hasFieldError(bookErrors, 'pageCount')}
@@ -577,7 +785,7 @@ function App() {
                   <FieldMessages errors={bookErrors} field="pageCount" />
                 </label>
                 <label>
-                  <span>Cover URL</span>
+                  <span>{t.coverUrl}</span>
                   <input
                     className={fieldClass(bookErrors, 'coverUrl')}
                     aria-invalid={hasFieldError(bookErrors, 'coverUrl')}
@@ -588,7 +796,7 @@ function App() {
                 </label>
               </div>
 
-              <label htmlFor="book-creator-credit">Creator Credit</label>
+              <label htmlFor="book-creator-credit">{t.creatorCredit}</label>
               <input
                 id="book-creator-credit"
                 className={fieldClass(bookErrors, 'creatorCredit')}
@@ -598,7 +806,7 @@ function App() {
               />
               <FieldMessages errors={bookErrors} field="creatorCredit" />
 
-              <label htmlFor="book-description">Description</label>
+              <label htmlFor="book-description">{t.description}</label>
               <textarea
                 id="book-description"
                 className={fieldClass(bookErrors, 'description')}
@@ -611,17 +819,17 @@ function App() {
 
               <label className="checkbox">
                 <input type="checkbox" checked={bookForm.publishOnSite} onChange={(event) => setBookFormField('publishOnSite', event.target.checked)} />
-                <span>Publish on site</span>
+                <span>{t.publishOnSite}</span>
               </label>
 
-              {bookMutationError && <ProblemMessage error={bookMutationError} />}
+              {bookMutationError && <ProblemMessage error={bookMutationError} t={t} />}
               <div className="actions">
                 <button type="submit" disabled={createBook.isPending || updateBook.isPending}>
-                  {editingBookId ? 'Save' : 'Create'}
+                  {editingBookId ? t.save : t.create}
                 </button>
                 {editingBookId && (
                   <button type="button" className="secondary" onClick={cancelBookEdit}>
-                    Cancel
+                    {t.cancel}
                   </button>
                 )}
               </div>
@@ -631,18 +839,18 @@ function App() {
           <section className="content-area">
             <div className="section-heading">
               <div>
-                <h2>Books</h2>
-                <p>{booksQuery.data?.total ?? 0} active records</p>
+                <h2>{t.books}</h2>
+                <p>{booksQuery.data?.total ?? 0} {t.activeRecords}</p>
               </div>
               <div className="filters">
                 <label className="search">
-                  <span>Search</span>
+                  <span>{t.search}</span>
                   <input value={bookSearch} onChange={(event) => setBookSearch(event.target.value)} />
                 </label>
                 <label className="search">
-                  <span>Author</span>
+                  <span>{t.author}</span>
                   <select value={bookAuthorFilter} onChange={(event) => setBookAuthorFilter(event.target.value)}>
-                    <option value="">All</option>
+                    <option value="">{t.all}</option>
                     {authors.map((author) => (
                       <option key={author.id} value={author.id}>
                         {author.name}
@@ -651,9 +859,9 @@ function App() {
                   </select>
                 </label>
                 <label className="search">
-                  <span>Genre</span>
+                  <span>{t.genre}</span>
                   <select value={bookGenreFilter} onChange={(event) => setBookGenreFilter(event.target.value)}>
-                    <option value="">All</option>
+                    <option value="">{t.all}</option>
                     {genres.map((genre) => (
                       <option key={genre.id} value={genre.id}>
                         {genre.name}
@@ -664,15 +872,15 @@ function App() {
               </div>
             </div>
 
-            {booksQuery.isPending && <p className="state">Loading books...</p>}
-            {booksQuery.isError && <ProblemMessage error={booksQuery.error} />}
-            {booksQuery.data?.items.length === 0 && <p className="state">No books found.</p>}
+            {booksQuery.isPending && <p className="state">{t.loadingBooks}</p>}
+            {booksQuery.isError && <ProblemMessage error={booksQuery.error} t={t} />}
+            {booksQuery.data?.items.length === 0 && <p className="state">{t.noBooksFound}</p>}
 
             <div className="table" role="table" aria-label="Books">
               {booksQuery.data?.items.map((book) => (
                 <div className="table-row book-row" role="row" key={book.id}>
                   <div className="book-summary">
-                    <BookCover title={book.title} coverUrl={book.coverUrl} />
+                    <BookCover title={book.title} coverUrl={book.coverUrl} coverOfLabel={t.coverOf} />
                     <div>
                       <strong>{book.title}</strong>
                       <p>{book.authorName} · {book.genreName}</p>
@@ -681,10 +889,10 @@ function App() {
                   </div>
                   <div className="row-actions">
                     <button type="button" className="secondary" onClick={() => editBook(book)}>
-                      Edit
+                      {t.edit}
                     </button>
                     <button type="button" className="danger" disabled={deleteBook.isPending} onClick={() => deleteBook.mutate(book.id)}>
-                      Delete
+                      {t.delete}
                     </button>
                   </div>
                 </div>
@@ -694,7 +902,7 @@ function App() {
             {bookTotal > 0 && (
               <nav className="pagination" aria-label="Book list pagination">
                 <p>
-                  Showing {bookPageStart}-{bookPageEnd} of {bookTotal}
+                  {t.showing} {bookPageStart}-{bookPageEnd} {t.of} {bookTotal}
                 </p>
                 <div className="pagination-controls">
                   <button
@@ -703,10 +911,10 @@ function App() {
                     disabled={bookPage <= 1 || booksQuery.isFetching}
                     onClick={() => setBookPage((current) => Math.max(1, current - 1))}
                   >
-                    Previous
+                    {t.previous}
                   </button>
                   <span>
-                    Page {bookPage} of {bookTotalPages}
+                    {t.page} {bookPage} {t.of} {bookTotalPages}
                   </span>
                   <button
                     type="button"
@@ -714,7 +922,7 @@ function App() {
                     disabled={bookPage >= bookTotalPages || booksQuery.isFetching}
                     onClick={() => setBookPage((current) => Math.min(bookTotalPages, current + 1))}
                   >
-                    Next
+                    {t.next}
                   </button>
                 </div>
               </nav>
@@ -724,10 +932,10 @@ function App() {
       ) : (
         <section className="workspace" aria-label={`${tab} management`}>
           <aside className="panel">
-            <h2>{editingReference ? `Edit ${singular(tab)}` : `New ${singular(tab)}`}</h2>
+            <h2>{editingReference ? editReferenceTitle(tab, t) : newReferenceTitle(tab, t)}</h2>
             {editingReference ? (
               <form onSubmit={submitReferenceEdit} className="form-stack">
-                <label htmlFor="reference-edit-name">Name</label>
+                <label htmlFor="reference-edit-name">{t.name}</label>
                 <input
                   id="reference-edit-name"
                   className={fieldClass(referenceErrors, 'name')}
@@ -737,19 +945,19 @@ function App() {
                   autoFocus
                 />
                 <FieldMessages errors={referenceErrors} field="name" />
-                {referenceMutationError && <ProblemMessage error={referenceMutationError} />}
+                {referenceMutationError && <ProblemMessage error={referenceMutationError} t={t} />}
                 <div className="actions">
                   <button type="submit" disabled={updateReference.isPending}>
-                    Save
+                    {t.save}
                   </button>
                   <button type="button" className="secondary" onClick={() => setEditingReference(null)}>
-                    Cancel
+                    {t.cancel}
                   </button>
                 </div>
               </form>
             ) : (
               <form onSubmit={submitReference} className="form-stack">
-                <label htmlFor="reference-name">Name</label>
+                <label htmlFor="reference-name">{t.name}</label>
                 <input
                   id="reference-name"
                   className={fieldClass(referenceErrors, 'name')}
@@ -758,9 +966,9 @@ function App() {
                   onChange={(event) => setReferenceName(event.target.value)}
                 />
                 <FieldMessages errors={referenceErrors} field="name" />
-                {referenceMutationError && <ProblemMessage error={referenceMutationError} />}
+                {referenceMutationError && <ProblemMessage error={referenceMutationError} t={t} />}
                 <button type="submit" disabled={createReference.isPending}>
-                  Create
+                  {t.create}
                 </button>
               </form>
             )}
@@ -769,29 +977,29 @@ function App() {
           <section className="content-area">
             <div className="section-heading">
               <div>
-                <h2>{titleCase(tab)}</h2>
-                <p>{referenceQuery.data?.total ?? 0} active records</p>
+                <h2>{tabLabel(tab, t)}</h2>
+                <p>{referenceQuery.data?.total ?? 0} {t.activeRecords}</p>
               </div>
               <label className="search">
-                <span>Search</span>
+                <span>{t.search}</span>
                 <input value={referenceSearch} onChange={(event) => setReferenceSearch(event.target.value)} />
               </label>
             </div>
 
-            {referenceQuery.isPending && <p className="state">Loading {tab}...</p>}
-            {referenceQuery.isError && <ProblemMessage error={referenceQuery.error} />}
-            {referenceQuery.data?.items.length === 0 && <p className="state">No {tab} found.</p>}
+            {referenceQuery.isPending && <p className="state">{t.loadingRecords}</p>}
+            {referenceQuery.isError && <ProblemMessage error={referenceQuery.error} t={t} />}
+            {referenceQuery.data?.items.length === 0 && <p className="state">{t.noRecordsFound}</p>}
 
-            <div className="table" role="table" aria-label={titleCase(tab)}>
+            <div className="table" role="table" aria-label={tabLabel(tab, t)}>
               {referenceQuery.data?.items.map((record) => (
                 <div className="table-row" role="row" key={record.id}>
                   <div>
                     <strong>{record.name}</strong>
-                    {record.isSystem && <span className="pill">System</span>}
+                    {record.isSystem && <span className="pill">{t.system}</span>}
                   </div>
                   <div className="row-actions">
                     <button type="button" className="secondary" disabled={record.isSystem} onClick={() => startReferenceEdit(record)}>
-                      Edit
+                      {t.edit}
                     </button>
                     <button
                       type="button"
@@ -799,7 +1007,7 @@ function App() {
                       disabled={record.isSystem || deleteReference.isPending}
                       onClick={() => deleteReference.mutate({ type: referenceType, id: record.id })}
                     >
-                      Delete
+                      {t.delete}
                     </button>
                   </div>
                 </div>
@@ -843,7 +1051,7 @@ function toBookPayload(form: BookForm) {
   }
 }
 
-function BookCover({ title, coverUrl }: { title: string; coverUrl: string | null }) {
+function BookCover({ title, coverUrl, coverOfLabel }: { title: string; coverUrl: string | null; coverOfLabel: string }) {
   const [failed, setFailed] = useState(false)
 
   if (!coverUrl || failed) {
@@ -858,15 +1066,15 @@ function BookCover({ title, coverUrl }: { title: string; coverUrl: string | null
     <img
       className="book-cover"
       src={coverUrl}
-      alt={`Cover of ${title}`}
+      alt={`${coverOfLabel} ${title}`}
       loading="lazy"
       onError={() => setFailed(true)}
     />
   )
 }
 
-function ProblemMessage({ error }: { error: unknown }) {
-  const problem = getProblem(error)
+function ProblemMessage({ error, t }: { error: unknown; t: TranslationSet }) {
+  const problem = getProblem(error, t)
   const fieldMessages = Object.entries(problem.errors)
 
   return (
@@ -877,7 +1085,7 @@ function ProblemMessage({ error }: { error: unknown }) {
           {fieldMessages.flatMap(([field, messages]) =>
             messages.map((message) => (
               <li key={`${field}-${message}`}>
-                {fieldLabel(field)}: {message}
+                {fieldLabel(field, t)}: {message}
               </li>
             )),
           )}
@@ -887,23 +1095,119 @@ function ProblemMessage({ error }: { error: unknown }) {
   )
 }
 
-function AuthShell({ children, healthLabel }: { children: React.ReactNode; healthLabel: string }) {
+function AuthShell({
+  children,
+  healthLabel,
+  language,
+  onLanguageChange,
+  t,
+}: {
+  children: React.ReactNode
+  healthLabel: string
+  language: Language
+  onLanguageChange: (language: Language) => void
+  t: TranslationSet
+}) {
   return (
     <main className="app-shell auth-shell">
       <header className="topbar">
         <div>
           <p className="eyebrow">Books Library</p>
-          <h1>Catalog Administration</h1>
+          <h1>{t.catalogAdministration}</h1>
         </div>
-        <div className={`health health-${healthLabel}`}>
-          <span aria-hidden="true" />
-          API {healthLabel}
-        </div>
+        <TopbarActions
+          healthLabel={healthLabel}
+          language={language}
+          onLanguageChange={onLanguageChange}
+          t={t}
+        />
       </header>
       {children}
     </main>
   )
 }
+
+function TopbarActions({
+  healthLabel,
+  language,
+  onLanguageChange,
+  onSignOut,
+  t,
+}: {
+  healthLabel: string
+  language: Language
+  onLanguageChange: (language: Language) => void
+  onSignOut?: () => void
+  t: TranslationSet
+}) {
+  return (
+    <div className="topbar-actions" aria-label="Header actions">
+      <div className={`health health-${healthLabel}`}>
+        <span aria-hidden="true" />
+        {t.api} {healthText(healthLabel, t)}
+      </div>
+      <LanguageSelector language={language} onLanguageChange={onLanguageChange} t={t} />
+      {onSignOut && (
+        <button type="button" className="icon-button" onClick={onSignOut}>
+          <LogoutIcon />
+          <span>{t.signOut}</span>
+        </button>
+      )}
+    </div>
+  )
+}
+
+function LanguageSelector({
+  language,
+  onLanguageChange,
+  t,
+}: {
+  language: Language
+  onLanguageChange: (language: Language) => void
+  t: TranslationSet
+}) {
+  return (
+    <label className="language-select">
+      <span className="language-label">
+        <LanguageIcon />
+        {t.language}
+      </span>
+      <span className="language-control">
+        <select value={language} onChange={(event) => onLanguageChange(event.target.value as Language)}>
+          {languages.map((option) => (
+            <option key={option.code} value={option.code}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </span>
+    </label>
+  )
+}
+
+function LanguageIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M5 5h8" />
+      <path d="M9 3v2" />
+      <path d="M11 5c-.7 2.8-2.7 5.2-6 7" />
+      <path d="M7.5 8.5c1.1 1.6 2.6 2.8 4.5 3.5" />
+      <path d="M14 19l4-10 4 10" />
+      <path d="M15.5 15h5" />
+    </svg>
+  )
+}
+
+function LogoutIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M10 17l5-5-5-5" />
+      <path d="M15 12H3" />
+      <path d="M14 4h4a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-4" />
+    </svg>
+  )
+}
+
 
 function readSession(): Session | null {
   try {
@@ -927,6 +1231,15 @@ function readSession(): Session | null {
   }
 }
 
+function readLanguageCookie(): Language {
+  const cookie = document.cookie
+    .split('; ')
+    .find((value) => value.startsWith('books-lib-language='))
+    ?.split('=')[1]
+
+  return isLanguage(cookie) ? cookie : 'en'
+}
+
 function FieldMessages({ errors, field }: { errors: ValidationErrors; field: string }) {
   const messages = errors[field] ?? []
   if (messages.length === 0) {
@@ -943,12 +1256,12 @@ function FieldMessages({ errors, field }: { errors: ValidationErrors; field: str
 }
 
 function getValidationErrors(error: unknown): ValidationErrors {
-  return getProblem(error).errors
+  return getProblem(error, translations.en).errors
 }
 
-function getProblem(error: unknown): { message: string; errors: ValidationErrors } {
+function getProblem(error: unknown, t: TranslationSet): { message: string; errors: ValidationErrors } {
   if (!axios.isAxiosError(error)) {
-    return { message: 'Request failed.', errors: {} }
+    return { message: t.requestFailed, errors: {} }
   }
 
   const data = error.response?.data
@@ -957,7 +1270,7 @@ function getProblem(error: unknown): { message: string; errors: ValidationErrors
   const title = typeof data?.title === 'string' ? data.title : null
 
   return {
-    message: detail ?? title ?? 'Request failed.',
+    message: detail ?? title ?? t.requestFailed,
     errors,
   }
 }
@@ -980,36 +1293,53 @@ function fieldClass(errors: ValidationErrors, field: string) {
   return hasFieldError(errors, field) ? 'invalid-field' : undefined
 }
 
-function fieldLabel(field: string) {
+function fieldLabel(field: string, t: TranslationSet) {
   const labels: Record<string, string> = {
-    authorId: 'Author',
-    collectionName: 'Collection',
-    copyCount: 'Copies',
-    coverUrl: 'Cover URL',
-    creatorCredit: 'Creator Credit',
-    currentPassword: 'Current Password',
-    description: 'Description',
-    email: 'Email',
-    genreId: 'Genre',
+    authorId: t.author,
+    collectionName: t.collection,
+    copyCount: t.copies,
+    coverUrl: t.coverUrl,
+    creatorCredit: t.creatorCredit,
+    currentPassword: t.currentPassword,
+    description: t.description,
+    email: t.email,
+    genreId: t.genre,
     isbn10: 'ISBN-10',
     isbn13: 'ISBN-13',
-    name: 'Name',
-    newPassword: 'New Password',
-    pageCount: 'Page Count',
-    password: 'Password',
-    publisher: 'Publisher',
-    title: 'Title',
+    name: t.name,
+    newPassword: t.newPassword,
+    pageCount: t.pageCount,
+    password: t.password,
+    publisher: t.publisher,
+    title: t.title,
   }
 
   return labels[field] ?? field
 }
 
-function singular(value: Tab) {
-  return value === 'authors' ? 'Author' : value === 'genres' ? 'Genre' : 'Book'
+function isLanguage(value: string | undefined): value is Language {
+  return value === 'en' || value === 'pt' || value === 'es'
 }
 
-function titleCase(value: string) {
-  return value.slice(0, 1).toUpperCase() + value.slice(1)
+function tabLabel(value: Tab, t: TranslationSet) {
+  if (value === 'authors') return t.authors
+  if (value === 'genres') return t.genres
+  return t.books
+}
+
+function newReferenceTitle(value: Tab, t: TranslationSet) {
+  return value === 'authors' ? t.newAuthor : t.newGenre
+}
+
+function editReferenceTitle(value: Tab, t: TranslationSet) {
+  return value === 'authors' ? t.editAuthor : t.editGenre
+}
+
+function healthText(value: string, t: TranslationSet) {
+  if (value === 'ready') return t.statusReady
+  if (value === 'offline') return t.statusOffline
+  if (value === 'degraded') return t.statusDegraded
+  return t.statusChecking
 }
 
 export default App

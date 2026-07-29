@@ -14,6 +14,16 @@
   border-bottom: 1px solid #d9dee7;
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid #d9dee7;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
 .auth-shell {
   display: grid;
   grid-template-rows: auto 1fr;
@@ -61,12 +71,14 @@ h2 {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-width: 120px;
+  min-width: 116px;
+  min-height: 40px;
+  box-sizing: border-box;
   justify-content: center;
   padding: 8px 12px;
   border: 1px solid #cbd5e1;
-  border-radius: 999px;
-  background: #f8fafc;
+  border-radius: 6px;
+  background: #ffffff;
   color: #334155;
   font-weight: 700;
 }
@@ -84,6 +96,66 @@ h2 {
 
 .health-offline span {
   background: #c2410c;
+}
+
+.language-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 40px;
+  box-sizing: border-box;
+  padding: 0 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.language-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #334155;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.language-label svg,
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.language-select select {
+  width: auto;
+  min-height: 40px;
+  min-width: 120px;
+  border: 0;
+  padding: 0 24px 0 4px;
+  background: transparent;
+  outline-offset: -2px;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  border-color: #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #334155;
+}
+
+.icon-button:hover:not(:disabled) {
+  border-color: #1d4ed8;
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 
 .tabs {
@@ -409,6 +481,19 @@ button.danger:hover:not(:disabled) {
   .section-heading {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .topbar-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .language-select {
+    justify-content: space-between;
+  }
+
+  .language-select select {
+    min-width: 0;
   }
 
   .workspace {
