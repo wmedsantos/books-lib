@@ -658,10 +658,13 @@ function App() {
             <div className="table" role="table" aria-label="Books">
               {booksQuery.data?.items.map((book) => (
                 <div className="table-row book-row" role="row" key={book.id}>
-                  <div>
-                    <strong>{book.title}</strong>
-                    <p>{book.authorName} · {book.genreName}</p>
-                    <p>{[book.publisher, book.publishedOn, book.isbn13].filter(Boolean).join(' · ')}</p>
+                  <div className="book-summary">
+                    <BookCover title={book.title} coverUrl={book.coverUrl} />
+                    <div>
+                      <strong>{book.title}</strong>
+                      <p>{book.authorName} · {book.genreName}</p>
+                      <p>{[book.publisher, book.publishedOn, book.isbn13].filter(Boolean).join(' · ')}</p>
+                    </div>
                   </div>
                   <div className="row-actions">
                     <button type="button" className="secondary" onClick={() => editBook(book)}>
@@ -796,6 +799,28 @@ function toBookPayload(form: BookForm) {
     sourceAddedOn: form.sourceAddedOn || null,
     publishOnSite: form.publishOnSite,
   }
+}
+
+function BookCover({ title, coverUrl }: { title: string; coverUrl: string | null }) {
+  const [failed, setFailed] = useState(false)
+
+  if (!coverUrl || failed) {
+    return (
+      <div className="book-cover-placeholder" aria-hidden="true">
+        <span>{title.trim().charAt(0).toUpperCase() || 'B'}</span>
+      </div>
+    )
+  }
+
+  return (
+    <img
+      className="book-cover"
+      src={coverUrl}
+      alt={`Cover of ${title}`}
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  )
 }
 
 function ProblemMessage({ error }: { error: unknown }) {

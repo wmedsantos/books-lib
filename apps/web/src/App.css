@@ -288,6 +288,37 @@ button.danger:hover:not(:disabled) {
   overflow-wrap: anywhere;
 }
 
+.book-summary {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.book-cover,
+.book-cover-placeholder {
+  width: 52px;
+  height: 72px;
+  border-radius: 4px;
+}
+
+.book-cover {
+  display: block;
+  object-fit: cover;
+  background: #e2e8f0;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.16);
+}
+
+.book-cover-placeholder {
+  display: grid;
+  place-items: center;
+  border: 1px solid #cbd5e1;
+  background: #f1f5f9;
+  color: #64748b;
+  font-weight: 800;
+}
+
 .book-row p {
   margin: 4px 0 0;
   color: #52606d;
