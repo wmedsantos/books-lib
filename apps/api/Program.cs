@@ -1,4 +1,6 @@
 using BooksLib.Api.Data;
+using BooksLib.Api.Features.Authors;
+using BooksLib.Api.Features.Books;
 using BooksLib.Api.Features.Genres;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -77,6 +79,8 @@ app.MapHealthChecks("/health/live", new() { Predicate = _ => false });
 app.MapHealthChecks("/health/ready");
 
 var api = app.MapGroup("/api/v1");
+api.MapAuthors();
+api.MapBooks();
 api.MapGenres();
 
 if (app.Configuration.GetValue("Database:AutoMigrate", true))

@@ -35,10 +35,10 @@ API, and PostgreSQL with main-scenario tests.
 
 ## Day 2 — Authors, books, and core relationships
 
-- [ ] Complete Author management through API and SPA.
-- [ ] Complete Book management with required Author and Genre relationships.
-- [ ] Add search, pagination, and relevant filters.
-- [ ] Add API tests for main success and failure paths.
+- [x] Complete Author management through API and SPA.
+- [x] Complete Book management with required Author and Genre relationships.
+- [x] Add search, pagination, and relevant filters.
+- [x] Add API tests for main success and failure paths.
 
 **Acceptance:** every mandatory domain operation works end to end and book lists
 display their author and genre.

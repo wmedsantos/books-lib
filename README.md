@@ -5,9 +5,9 @@ Solutions**. It will manage books, authors, and genres while keeping the domain
 language broad enough for a future community and cultural collection at
 UBEMTEM.
 
-> **Current status:** Day 1 walking skeleton. The repository now contains a
-> .NET 8 API, React/Vite SPA, PostgreSQL Compose setup, health checks, and the
-> first Genre management slice.
+> **Current status:** Day 2 catalog core. The repository now contains a .NET 8
+> API, React/Vite SPA, PostgreSQL Compose setup, health checks, and management
+> flows for Books, Authors, and Genres.
 
 ## Run Locally
 
@@ -29,8 +29,8 @@ Local URLs:
 - API health: http://localhost:5080/health/ready
 - Swagger: http://localhost:5080/swagger
 
-The API applies EF Core migrations at startup and seeds the system Genre
-`Unclassified` with immutable code `unclassified`.
+The API applies EF Core migrations at startup and seeds the system Author
+`Not Identified` plus the system Genre `Unclassified`.
 
 Run quality checks:
 

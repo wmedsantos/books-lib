@@ -78,10 +78,10 @@ public static class GenreEndpoints
         CatalogDbContext db,
         GenreRequest request)
     {
-        var validation = ValidateName(request.Name);
-        if (validation is not null)
+        var errors = GenreFieldValidator.Validate(request);
+        if (errors.Count > 0)
         {
-            return validation;
+            return TypedResults.ValidationProblem(errors);
         }
 
         var normalizedName = Genre.NormalizeKey(request.Name!);
@@ -105,10 +105,10 @@ public static class GenreEndpoints
         Guid id,
         GenreRequest request)
     {
-        var validation = ValidateName(request.Name);
-        if (validation is not null)
+        var errors = GenreFieldValidator.Validate(request);
+        if (errors.Count > 0)
         {
-            return validation;
+            return TypedResults.ValidationProblem(errors);
         }
 
         var genre = await db.Genres.SingleOrDefaultAsync(genre => genre.Id == id && genre.DeletedAtUtc == null);
@@ -154,26 +154,16 @@ public static class GenreEndpoints
             return Conflict("System genre cannot be deleted.", "The Unclassified genre is required by imports and cannot be deleted.");
         }
 
+        var hasActiveBooks = await db.Books.AnyAsync(book => book.GenreId == id && book.DeletedAtUtc == null);
+        if (hasActiveBooks)
+        {
+            return Conflict("Genre is in use.", "A genre with active books cannot be deleted.");
+        }
+
         genre.SoftDelete();
         await db.SaveChangesAsync();
 
         return TypedResults.NoContent();
-    }
-
-    private static ValidationProblem? ValidateName(string? name)
-    {
-        var errors = new Dictionary<string, string[]>();
-
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            errors["name"] = ["Name is required."];
-        }
-        else if (Genre.NormalizeDisplayName(name).Length > 120)
-        {
-            errors["name"] = ["Name must be 120 characters or fewer."];
-        }
-
-        return errors.Count == 0 ? null : TypedResults.ValidationProblem(errors);
     }
 
     private static Conflict<HttpValidationProblemDetails> Conflict(string title, string detail)

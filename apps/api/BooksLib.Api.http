@@ -9,9 +9,28 @@ Accept: application/json
 
 ###
 
+GET {{BooksLib.Api_HostAddress}}/api/v1/authors
+Accept: application/json
+
+###
+
+GET {{BooksLib.Api_HostAddress}}/api/v1/books
+Accept: application/json
+
+###
+
 POST {{BooksLib.Api_HostAddress}}/api/v1/genres
 Content-Type: application/json
 
 {
   "name": "Poetry"
+}
+
+###
+
+POST {{BooksLib.Api_HostAddress}}/api/v1/authors
+Content-Type: application/json
+
+{
+  "name": "Conceicao Evaristo"
 }
