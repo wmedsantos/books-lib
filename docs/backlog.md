@@ -53,7 +53,7 @@ display their author and genre.
 - [x] Protect write endpoints and implement frontend session handling.
 - [x] Smoke-test valid login, mandatory password change, unauthorized writes,
   forbidden expired-credential writes, and authorized writes.
-- [ ] Add automated authentication integration tests for invalid credentials,
+- [x] Add automated authentication integration tests for invalid credentials,
   JWT expiration, authorization failures, and log sanitization.
 
 - [x] Implement an anonymous public projection restricted to active books with
@@ -72,8 +72,9 @@ display their author and genre.
 - [x] Document environment variables, migrations, backup, deployment, and
   rollback.
 - [x] Add Render and Vercel configuration and production CORS origins.
-- [ ] Run accessibility, security, performance, and log-sanitization reviews.
-- [ ] Prepare seeded demo and English interview architecture narrative.
+- [x] Run log-sanitization review.
+- [x] Run accessibility, security, and performance reviews.
+- [x] Prepare seeded demo and English interview architecture narrative.
 
 **Acceptance:** reproducible deployment, verified smoke test, documented
 rollback, no unresolved critical findings, and every row in the requirement

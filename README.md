@@ -58,6 +58,20 @@ The web runtime dependency audit is clean with `npm --prefix apps/web audit
 advisory; fixing it requires a Vite major upgrade that drops compatibility with
 the Node version currently installed on this machine.
 
+## Logs
+
+The API uses Serilog request logging and currently writes logs only to standard
+output through the console sink. In Docker, read them with:
+
+```bash
+docker compose logs api
+```
+
+No file, database table, or external log sink is configured in this repository.
+Request logs are intentionally limited to method, path without query string,
+status code, and elapsed time. The application does not log request bodies,
+`Authorization` headers, passwords, or JWT values.
+
 ## Import the source catalog
 
 The source catalog export is read from `docs/input/library_20260729_190704.csv`.
@@ -143,8 +157,12 @@ visibility is intentional.
     relationships, and validation.
 12. [Day 3 checklist](docs/daily/day-03-identity-public-catalog.md) — identity,
     public catalog, audit, and delivery hardening.
+13. [Delivery review](docs/delivery-review.md) — accessibility, security,
+    performance, and log review.
+14. [Interview narrative](docs/interview-narrative.md) — seeded demo flow and
+    English architecture explanation.
 
-## Planned stack
+## Stack
 
 | Area | Choice | Purpose |
 | --- | --- | --- |
@@ -158,7 +176,7 @@ Dependencies will be added only with the feature that needs them. This keeps
 the initial system explainable and prevents a generated scaffold from becoming
 accidental architecture.
 
-## Planned repository shape
+## Repository shape
 
 ```text
 apps/

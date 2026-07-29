@@ -28,10 +28,10 @@ present in the repository.
 | CH-16 | UI is functional, organized, and understandable. | Consistent application shell, validation states, auth states | Delivered |
 | CH-17 | README explains how to run the solution. | Root `README.md` local setup section | Delivered |
 | CH-18 | Document overview, architecture, backend/frontend organization, database decision, and trade-offs. | README, Architecture, ADRs | Delivered |
-| CH-19 | Document testing, known limitations, and improvements with more time. | README, backlog, and daily checklists | In progress |
-| CH-20 | Submit backend, frontend, database setup, documentation, and relevant tests in a repository. | Final repository audit | In progress |
-| CH-21 | Be ready to explain structure, decisions, alternatives, trade-offs, evolution, improvements, developer guidance, and review approach in English. | English presentation guide and ADRs | Planned |
-| CH-22 | Complete within three calendar days; prefer functional coherence over excessive scope. | Three-day backlog and daily checklists | In progress |
+| CH-19 | Document testing, known limitations, and improvements with more time. | README, backlog, delivery review, and interview narrative | Delivered |
+| CH-20 | Submit backend, frontend, database setup, documentation, and relevant tests in a repository. | Repository files, Docker Compose, CI workflow, tests, and docs | Delivered |
+| CH-21 | Be ready to explain structure, decisions, alternatives, trade-offs, evolution, improvements, developer guidance, and review approach in English. | English interview narrative and ADRs | Delivered |
+| CH-22 | Complete within three calendar days; prefer functional coherence over excessive scope. | Three-day backlog and daily checklists | Delivered |
 
 ## Coherently selected differentiators
 
@@ -50,5 +50,5 @@ behavior or main-scenario tests.
 The final review must explicitly demonstrate the challenge's evaluation areas:
 functional implementation, solution architecture, backend and frontend quality,
 domain modeling, automated tests, documentation, technical decisions, and Tech
-Lead communication. Evidence links will replace `Planned` statuses as slices are
-completed.
+Lead communication. Delivered statuses are backed by implementation,
+documentation, tests, or explicit review notes in this repository.

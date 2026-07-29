@@ -36,7 +36,8 @@ append-only audit rows for deletes, and prepare repeatable delivery checks.
 - [x] Render and Vercel configuration added.
 - [x] Identity and audit tests added.
 - [x] CSV-to-PostgreSQL import script.
-- [ ] Full accessibility, security, performance, and log-sanitization review.
+- [x] Log-sanitization review completed.
+- [x] Full accessibility, security, and performance review.
 
 ## Development notes
 

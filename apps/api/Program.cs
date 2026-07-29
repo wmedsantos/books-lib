@@ -3,6 +3,7 @@ using BooksLib.Api.Features.Authors;
 using BooksLib.Api.Features.Books;
 using BooksLib.Api.Features.Genres;
 using BooksLib.Api.Features.Identity;
+using BooksLib.Api.Logging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -133,7 +134,14 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
-app.UseSerilogRequestLogging();
+app.UseSerilogRequestLogging(options =>
+{
+    options.MessageTemplate = RequestLogSanitizer.MessageTemplate;
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("RequestPath", RequestLogSanitizer.PathOnly(httpContext.Request));
+    };
+});
 
 if (app.Environment.IsDevelopment())
 {
