@@ -5,10 +5,10 @@ Solutions**. It will manage books, authors, and genres while keeping the domain
 language broad enough for a future community and cultural collection at
 UBEMTEM.
 
-> **Current status:** Day 3 identity and delivery hardening. The repository now
-> contains a .NET 8 API, React/Vite SPA, PostgreSQL Compose setup, JWT-secured
-> write flows, public catalog reads, health checks, and management flows for
-> Books, Authors, and Genres.
+> **Current status:** production demo deployed. The repository contains a .NET
+> 8 API, React/Vite SPA, PostgreSQL persistence, JWT-secured write flows,
+> public catalog reads, health checks, management flows for Books, Authors, and
+> Genres, and a CSV import path for the UBEMTEM/Libib source catalog.
 
 ## Run Locally
 
@@ -74,7 +74,7 @@ status code, and elapsed time. The application does not log request bodies,
 
 ## Production publish target
 
-The admin SPA is configured to be published under its own subdomain:
+The production admin SPA is published under its own subdomain:
 
 ```text
 https://biblio.ubemtem.org
@@ -86,7 +86,7 @@ at the domain root and rewrites all routes to the SPA entrypoint.
 Required frontend production environment variable:
 
 ```bash
-VITE_API_BASE_URL=https://replace-with-api-host
+VITE_API_BASE_URL=https://books-lib-yy5q.onrender.com
 ```
 
 Required API CORS production setting:
@@ -101,38 +101,52 @@ to the admin SPA deployment.
 
 ## Production API on Render
 
-The backend is configured for Render with [render.yaml](render.yaml). The
-Blueprint creates:
-
-- a Docker web service named `bookslib-api`
-- a Render Postgres database named `bookslib-db`
-- `DATABASE_URL` wired from the database internal connection string
-- CORS restricted to `https://biblio.ubemtem.org`
-- a generated `Jwt__SigningKey`
-
-Create the Blueprint from the Render dashboard using this GitHub repository.
-During the initial Blueprint creation, provide:
-
-```bash
-Bootstrap__Email=your-admin-email
-Bootstrap__Password=temporary-first-login-password
-```
-
-After the first successful deploy, verify:
+The production backend currently runs as a manually configured Render Web
+Service:
 
 ```text
-https://bookslib-api.onrender.com/health/ready
+https://books-lib-yy5q.onrender.com
 ```
 
-Then set the frontend production variable in Vercel to the Render API origin:
+Recommended Render service settings:
+
+```text
+Runtime: Docker
+Root Directory: blank / repository root
+Dockerfile Path: apps/api/Dockerfile
+Docker Build Context Directory: blank / .
+Health Check Path: /health/ready
+```
+
+Required Render environment variables:
 
 ```bash
-VITE_API_BASE_URL=https://bookslib-api.onrender.com
+ASPNETCORE_ENVIRONMENT=Production
+ASPNETCORE_URLS=http://+:8080
+DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false
+DATABASE_URL=postgresql://...
+Cors__AllowedOrigins__0=https://biblio.ubemtem.org
+Jwt__SigningKey=replace-with-a-strong-random-secret
+Bootstrap__Email=replace-with-admin-email
+Bootstrap__Password=replace-with-temporary-first-login-password
 ```
 
-Redeploy the Vercel frontend after changing that variable. If you later add a
-custom API domain, update both `VITE_API_BASE_URL` in Vercel and the API CORS
-origin only if the frontend origin changes.
+Use the Render PostgreSQL **Internal Database URL** for `DATABASE_URL` when the
+database is also hosted on Render. The API also accepts an Npgsql connection
+string through `ConnectionStrings__Catalog`.
+
+`DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false` avoids file-watcher limits on
+the Render free instance.
+
+After backend deploy, verify:
+
+```text
+https://books-lib-yy5q.onrender.com/health/live
+https://books-lib-yy5q.onrender.com/health/ready
+```
+
+Full production notes, DNS setup, smoke tests, and troubleshooting are in
+[Production Deployment](docs/production-deployment.md).
 
 ## Import the source catalog
 
@@ -223,13 +237,15 @@ visibility is intentional.
     performance, and log review.
 14. [Interview narrative](docs/interview-narrative.md) — seeded demo flow and
     English architecture explanation.
+15. [Production Deployment](docs/production-deployment.md) — live URLs,
+    provider settings, environment variables, DNS, and smoke tests.
 
 ## Stack
 
 | Area | Choice | Purpose |
 | --- | --- | --- |
 | Web | React, Vite, TypeScript, TanStack Query, Axios | Accessible, type-safe administration UI |
-| API | .NET 8, ASP.NET Core, EF Core, FluentValidation, JWT, Swagger | Explicit HTTP application boundary |
+| API | .NET 8, ASP.NET Core, EF Core, field validators, JWT, Swagger | Explicit HTTP application boundary |
 | Data | PostgreSQL | Durable relational catalog model |
 | Quality | xUnit, TypeScript build checks | Behaviour-focused automated tests and fast client feedback |
 | Operations | Docker Compose, Render, Vercel, Serilog, Health Checks | Repeatable local operation and low-cost deployment |

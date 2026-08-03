@@ -38,8 +38,8 @@ present in the repository.
 The challenge labels the following as optional differentiators. The governing
 project brief requires them, and the architecture includes them with bounded
 scope: Docker containerization, API integration tests, pagination and filters,
-JWT authentication, Serilog structured logging, global Problem Details,
-FluentValidation, health checks, security review, and ADRs.
+JWT authentication, Serilog request logging, global Problem Details, explicit
+field validation, health checks, security review, and ADRs.
 
 They must not delay CH-04 through CH-08 or leave the SPA incomplete. If the
 three-day timebox becomes constrained, optional polish is reduced before core

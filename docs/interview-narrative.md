@@ -1,6 +1,6 @@
 # Seeded Demo and English Interview Narrative
 
-**Date:** 2026-07-29
+**Date:** 2026-08-03
 
 ## Opening story
 
@@ -31,6 +31,18 @@ That real context influenced several decisions:
 - I added cover enrichment from the existing enriched Libib JSON first, and only
   then Google Books as an optional fallback.
 
+## Current production demo
+
+The deployed demo uses:
+
+- frontend: `https://biblio.ubemtem.org`
+- API: `https://books-lib-yy5q.onrender.com`
+- database: Render PostgreSQL
+- DNS: Squarespace-managed `ubemtem.org`, with `biblio` pointing to Vercel
+
+The main UBEMTEM website is managed from a separate repository, so the admin app
+uses a subdomain instead of being mounted at `/biblio-admin`.
+
 ## Two-minute architecture explanation
 
 Books Library is a small modular monolith with a React/Vite frontend, an
@@ -40,11 +52,11 @@ The browser never talks directly to the database. The API is the boundary for
 authorization, validation, transactions, import compatibility, and public versus
 administrative data exposure.
 
-On the backend, I organized the code by vertical feature slices: Books, Authors,
-Genres, Identity, Audit, and Import support. This keeps the code easy to review
-because each feature owns its endpoint contracts, validation, domain behavior,
-and tests. I avoided a heavy multi-project architecture because the domain is
-small and the timebox rewards coherent delivery over ceremony.
+On the backend, I organized the code by feature: Books, Authors, Genres,
+Identity, Audit, and import support. This keeps the code easy to review because
+each feature owns its endpoint contracts, validation, domain behavior, and
+tests. I avoided a heavy multi-project architecture because the domain is small
+and the timebox rewards coherent delivery over ceremony.
 
 The relational model is intentionally simple:
 
@@ -66,7 +78,13 @@ remembers the selected language in a cookie.
 
 ## Demo setup
 
-Start from a clean local run:
+For the production demo, open:
+
+- Web app: `https://biblio.ubemtem.org`
+- API live health: `https://books-lib-yy5q.onrender.com/health/live`
+- API ready health: `https://books-lib-yy5q.onrender.com/health/ready`
+
+For a local demo, start from a clean local run:
 
 ```bash
 BOOKSLIB_BOOTSTRAP_EMAIL=admin@bookslib.local \
@@ -77,22 +95,15 @@ docker compose up --build
 
 Open:
 
-- Web app: http://localhost:5173
-- Swagger: http://localhost:5080/swagger
-- API health: http://localhost:5080/health/ready
+- Web app: `http://localhost:5173`
+- Swagger: `http://localhost:5080/swagger`
+- API health: `http://localhost:5080/health/ready`
 
 Seed the catalog from the CSV export:
 
 ```bash
 .venv/bin/python scripts/import_catalog_csv.py --fetch-covers --report /tmp/booklib-import-report.json
 ```
-
-Expected local seed result after importing the current CSV:
-
-- 105 active books
-- 97 active authors, including `Not Identified`
-- 1 active genre, `Unclassified`
-- 86 books with cover URLs after local JSON cover enrichment
 
 If the database was already seeded, the importer is rerunnable. It reports the
 rows as duplicates and updates missing covers when possible instead of inserting
@@ -101,8 +112,9 @@ duplicate books.
 ## Suggested demo flow
 
 1. Show `/health/ready` returning healthy.
-2. Open the SPA and sign in as `admin@bookslib.local`.
-3. Show the mandatory password-change screen on the bootstrap account.
+2. Open the SPA and sign in with the configured admin account.
+3. Show the mandatory password-change screen if the bootstrap password is still
+   active.
 4. Change the password and enter the admin catalog.
 5. Show the book list:
    - cover thumbnails;
@@ -116,20 +128,24 @@ duplicate books.
    - publication flag;
    - cover URL.
 7. Create a new Author or Genre and show validation behavior.
-8. Try Swagger:
-   - call login;
-   - click Authorize;
-   - test a protected endpoint with the Bearer token.
-9. Explain public catalog behavior:
+8. Explain public catalog behavior:
    - imported books default to unpublished;
    - only active published books with active Author and Genre are public.
-10. Show the import report:
-    - rows read;
-    - duplicate handling;
-    - fallback counts;
-    - cover enrichment counts.
+9. Show the import report:
+   - rows read;
+   - duplicate handling;
+   - fallback counts;
+   - cover enrichment counts.
 
 ## Trade-offs to explain
+
+### Why Vercel for frontend and Render for backend?
+
+The frontend is a static Vite SPA, so Vercel gives a simple CDN-oriented deploy
+and custom-domain workflow. The backend is a Dockerized .NET API with
+PostgreSQL, health checks, migrations, and secret configuration, so Render is a
+better fit for that workload. The trade-off is operating two providers; the
+benefit is that each part runs in the environment with the least friction.
 
 ### Why a modular monolith?
 
@@ -142,7 +158,7 @@ module boundaries.
 
 The data is relational: Books require Authors and Genres, soft deletion must be
 queryable, and the import process benefits from constraints and transactions.
-PostgreSQL is robust, inexpensive, and supported by Render.
+PostgreSQL is robust, inexpensive, and supported by the chosen hosting path.
 
 ### Why not model multiple authors now?
 
@@ -213,6 +229,6 @@ Covered by tests:
 
 The important part of this solution is that it satisfies the technical
 challenge while being grounded in a real operational need. It is small enough to
-understand, but already has the seams UBEMTEM would need next: public catalog
-design freedom, safe imports, explicit publication, multilingual administration,
-and a clear path toward richer cultural-collection features.
+understand, but already has the boundaries UBEMTEM would need next: public
+catalog design freedom, safe imports, explicit publication, multilingual
+administration, and a clear path toward richer cultural-collection features.

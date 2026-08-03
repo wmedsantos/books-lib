@@ -1,6 +1,6 @@
 # Accessibility, Security, Performance, and Log Review
 
-**Date:** 2026-07-29
+**Date:** 2026-08-03
 
 This review records the final delivery checks for the Books Library challenge.
 It is intentionally scoped to repository evidence and local smoke testing, not
@@ -9,8 +9,9 @@ to a third-party penetration test or formal WCAG audit.
 ## Summary
 
 No critical blocker remains for the challenge delivery. The application has a
-working administrative SPA, secured write operations, public read projection,
-repeatable import script, automated tests, and documented local operation.
+working production SPA at `https://biblio.ubemtem.org`, a Render-hosted API,
+secured write operations, public read projection, repeatable import script,
+automated tests, and documented local and production operation.
 
 Known limitations are listed below so they can be discussed explicitly during
 review instead of being hidden.
@@ -83,6 +84,9 @@ review instead of being hidden.
   retention policy yet.
 - Deployment secrets must be configured in Render/Vercel dashboards, never
   committed to the repository.
+- The active Render free instance requires
+  `DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false` to avoid Linux file-watcher
+  limits during startup.
 
 ## Performance
 
@@ -123,7 +127,8 @@ docker compose logs api
 No application file sink, database table, or external log sink is configured in
 this repository. Persistence and retention are therefore owned by the runtime
 environment, such as Docker's logging driver locally or the hosting provider's
-log stream in production.
+log stream in production. In production, Render owns API log retention through
+the service log stream.
 
 ### Sanitization policy
 

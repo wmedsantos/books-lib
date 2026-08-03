@@ -1,6 +1,6 @@
 # Architecture
 
-**Status:** Proposed<br>
+**Status:** Current production architecture<br>
 **Decision horizon:** MVP plus one likely UBEMTEM adaptation
 
 ## Context
@@ -32,15 +32,13 @@ validation, transaction, and compatibility boundary.
 ### API: modular monolith with vertical slices
 
 One deployable ASP.NET Core process contains modules for `Identity`, `Books`,
-`Authors`, and `Genres`. Within a module, folders are organized by use case—for
-example `Books/Create`, `Books/List`, and `Books/Update`—rather than by a global
-technical layer.
+`Authors`, and `Genres`. Within a module, files are organized around the
+feature boundary: endpoint mapping, request/response contracts, field
+validation, entity behavior, EF Core mapping, and tests.
 
-Each slice owns its request/response contract, FluentValidation validator,
-application handler, endpoint mapping, and tests. Domain entities and EF Core
-configuration remain internal to the module where practical. Cross-cutting
-infrastructure is limited to authentication, persistence setup, error mapping,
-logging, and health checks.
+Each slice owns its HTTP contract, validation rules, endpoint behavior, and
+tests. Cross-cutting infrastructure is limited to authentication, persistence
+setup, error mapping, logging, and health checks.
 
 This applies Clean Architecture at boundaries, not as four projects full of
 pass-through interfaces. The HTTP layer does not contain business rules, and
@@ -50,11 +48,11 @@ seam.
 
 ### Web: route-oriented features
 
-React Router defines screen boundaries. Each feature owns its components,
-query/mutation hooks, form schema/types, and API calls. Axios provides one
-configured transport client; TanStack Query owns server-state caching and
-invalidation. Local UI state stays in React. A global state library is not
-justified for the MVP.
+The current React app is a compact single-page admin shell with tabbed sections
+for books, authors, and genres. Feature state, form state, language preference,
+session state, and pagination stay in React. Axios provides one configured
+transport client; TanStack Query owns server-state caching and invalidation. A
+global state library is not justified for the MVP.
 
 The API remains the source of truth. TypeScript response types describe the
 wire contract but are not treated as domain entities.
@@ -107,13 +105,17 @@ so a successful deletion cannot exist without its operation log. This small,
 purpose-specific audit trail is preferred over a generic event-sourcing or
 full-history subsystem.
 
-Serilog emits structured JSON in production. Request logs carry trace IDs and
-avoid request bodies. `/health/live` checks the process; `/health/ready` checks
-database connectivity so Render can distinguish restart from traffic readiness.
+Serilog emits request logs to standard output. Request logs avoid request
+bodies, query strings, authorization headers, passwords, and JWT values.
+`/health/live` checks the process; `/health/ready` checks database connectivity
+so Render can distinguish restart from traffic readiness.
 
-Docker Compose provides API, web, and PostgreSQL for local development. Render
-hosts the containerized API and database; Vercel hosts static frontend assets.
-This is cheaper and easier to operate than Kubernetes or multiple services.
+Docker Compose provides API, web, and PostgreSQL for local development. In
+production, Vercel hosts the static frontend at `https://biblio.ubemtem.org`;
+Render hosts the containerized API at
+`https://books-lib-yy5q.onrender.com`; and Render PostgreSQL stores catalog
+data. The UBEMTEM public site remains separate, so the admin app uses its own
+subdomain rather than `/biblio-admin` under the main site.
 
 ## Quality strategy
 

@@ -6,16 +6,18 @@
 ## Context
 
 The React application and API deploy separately. Catalog screens need caching,
-loading/error handling, mutation feedback, and predictable URLs. The challenge
-requires React Router, TanStack Query, and Axios.
+loading/error handling, mutation feedback, and predictable screen state. The
+current SPA uses TanStack Query and Axios without a router because the MVP is a
+single admin shell with tabbed sections rather than distinct deep-linkable
+routes.
 
 ## Decision
 
 Expose versioned resource-oriented JSON endpoints from ASP.NET Core. Use RFC
-7807 Problem Details for errors. In the web app, use React Router for navigation,
-one configured Axios client for transport concerns, and TanStack Query for
-remote data lifecycle. Keep transient form and presentation state local to the
-feature.
+7807 Problem Details for errors. In the web app, use one configured Axios
+client for transport concerns and TanStack Query for remote data lifecycle. Keep
+transient form, tab, filter, pagination, language, and presentation state local
+to the application shell until deep linking becomes a validated need.
 
 Do not duplicate server records in a global client store. Query keys will be
 feature-owned and mutations will invalidate only affected collections/details.
