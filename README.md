@@ -72,6 +72,68 @@ Request logs are intentionally limited to method, path without query string,
 status code, and elapsed time. The application does not log request bodies,
 `Authorization` headers, passwords, or JWT values.
 
+## Production publish target
+
+The admin SPA is configured to be published under its own subdomain:
+
+```text
+https://biblio.ubemtem.org
+```
+
+For Vercel, [apps/web/vercel.json](apps/web/vercel.json) builds the Vite app
+at the domain root and rewrites all routes to the SPA entrypoint.
+
+Required frontend production environment variable:
+
+```bash
+VITE_API_BASE_URL=https://replace-with-api-host
+```
+
+Required API CORS production setting:
+
+```bash
+Cors__AllowedOrigins__0=https://biblio.ubemtem.org
+```
+
+If the public UBEMTEM site continues to be served from the separate
+`wmedsantos/ubemtem` repository, using this subdomain avoids coupling that site
+to the admin SPA deployment.
+
+## Production API on Render
+
+The backend is configured for Render with [render.yaml](render.yaml). The
+Blueprint creates:
+
+- a Docker web service named `bookslib-api`
+- a Render Postgres database named `bookslib-db`
+- `DATABASE_URL` wired from the database internal connection string
+- CORS restricted to `https://biblio.ubemtem.org`
+- a generated `Jwt__SigningKey`
+
+Create the Blueprint from the Render dashboard using this GitHub repository.
+During the initial Blueprint creation, provide:
+
+```bash
+Bootstrap__Email=your-admin-email
+Bootstrap__Password=temporary-first-login-password
+```
+
+After the first successful deploy, verify:
+
+```text
+https://bookslib-api.onrender.com/health/ready
+```
+
+Then set the frontend production variable in Vercel to the Render API origin:
+
+```bash
+VITE_API_BASE_URL=https://bookslib-api.onrender.com
+```
+
+Redeploy the Vercel frontend after changing that variable. If you later add a
+custom API domain, update both `VITE_API_BASE_URL` in Vercel and the API CORS
+origin only if the frontend origin changes.
+
 ## Import the source catalog
 
 The source catalog export is read from `docs/input/library_20260729_190704.csv`.

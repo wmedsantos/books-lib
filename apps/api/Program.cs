@@ -44,7 +44,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddDbContext<CatalogDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Catalog")));
+    options.UseNpgsql(DatabaseConnectionString.Resolve(builder.Configuration)));
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<TokenService>();
