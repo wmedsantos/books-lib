@@ -465,6 +465,10 @@ function App() {
       const response = await api.post<Session>('/api/v1/identity/change-password', {
         currentPassword,
         newPassword,
+      }, {
+        headers: session?.accessToken
+          ? { Authorization: `Bearer ${session.accessToken}` }
+          : undefined,
       })
       return response.data
     },
